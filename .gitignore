@@ -15,3 +15,9 @@ dist/
 
 # Undo-tree save-files
 *.~undo-tree
+
+# created by emacs
+elpa/
+eln-cache/
+transient/
+
