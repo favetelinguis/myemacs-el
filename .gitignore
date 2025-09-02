@@ -21,3 +21,12 @@ elpa/
 eln-cache/
 transient/
 
+bookmarks
+desktop
+custom.el
+history
+eshell/
+desktop.lock
+.cache/
+projects
+tramp
