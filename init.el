@@ -5,6 +5,23 @@
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
+(use-package ibuffer
+  :bind ("C-x C-b" . ibuffer)
+  :config
+  ;;TODO not sure this is working prob need to fix
+  (setq ibuffer-saved-filter-groups
+        '(("default"
+           ("dired" (mode . dired-mode))
+           ("org" (mode . org-mode))
+           ("programming" (or
+                          (mode . python-mode)
+                          (mode . emacs-lisp-mode)))
+           ("emacs" (or
+                    (name . "^\\*scratch\\*$")
+                    (name . "^\\*Messages\\*$"))))))
+  (add-hook 'ibuffer-mode-hook
+            (lambda () (ibuffer-switch-to-saved-filter-groups "default"))))
+
 (use-package which-key
   :custom
   (which-key-mode 1))
@@ -31,9 +48,26 @@
   :ensure nil
   :bind
   (:map global-map
-	("C-c o" . find-file-at-point)
-	("C-x k" . kill-current-buffer))
+("C-x k" . kill-current-buffer))
   :config
+  ;; dissable creating lock files, i can now edit the same file from multiple emacs instances which can be bad
+  (setq create-lockfiles nil)
+  ;; I dont really know what this does i got it from
+  ;;https://blog.chmouel.com/posts/emacs-isearch/
+  ;; I use it to get occur selected from isearch
+  (defun my-select-window (window &rest _)
+    "Select WINDOW for display-buffer-alist"
+    (select-window window))
+  (setq display-buffer-alist
+'(((or . ((derived-mode . occur-mode)))
+           (display-buffer-reuse-mode-window display-buffer-at-bottom)
+           (body-function . my-select-window)
+           (dedicated . t)
+           (preserve-size . (t . t)))))
+
+  (setq ring-bell-function 'ignore)
+  ;; allow all disabled commands without prompting
+  (setq disabled-command-function nil)
   ;;This tells Emacs to write all customizations (from `M-x customize` interface) to `~/.emacs.d/custom.el` instead of appending them to your `init.el`.
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (load custom-file 'noerror)
@@ -45,7 +79,7 @@
                       :weight 'normal
                       :width 'normal)
   :custom
-  
+ 
   ;; Curfu
   ;; TAB cycle if there are only few candidates
   ;; (completion-cycle-threshold 3)
@@ -88,14 +122,14 @@
   (setq inhibit-startup-message t)
   ;; Put auto-save files in a dedicated directory
   (setq auto-save-file-name-transforms
-	`((".*" ,(concat user-emacs-directory "auto-save/") t)))
+`((".*" ,(concat user-emacs-directory "auto-save/") t)))
 
   ;; Create the directory if it doesn't exist
   (make-directory (concat user-emacs-directory "auto-save/") t)
 
   ;; Put backup files in a dedicated directory
   (setq backup-directory-alist
-	`((".*" . ,(concat user-emacs-directory "backup/"))))
+`((".*" . ,(concat user-emacs-directory "backup/"))))
 
   (make-directory (concat user-emacs-directory "backup/") t)
   )
@@ -153,10 +187,37 @@
 
 (use-package gptel
   :ensure t
+  :hook ((gptel-post-stream . gptel-auto-scroll)
+(gptel-post-response-functions . gptel-end-of-response))
   :bind
   ( :map global-map
-    ("C-c q" . gptel-send))
+    ("C-c q r" . gptel-rewrite)
+    ("C-c q m" . gptel-menu)
+    ("C-c q a" . gptel-add)
+    ("C-c q f" . gptel-add-file)
+    ("C-c q q" . gptel-send))
   :config
+  (gptel-make-tool
+   :name "create_file"                    ; javascript-style  snake_case name
+   :function (lambda (path filename content)   ; the function that runs
+               (let ((full-path (expand-file-name filename path)))
+(with-temp-buffer
+                   (insert content)
+                   (write-file full-path))
+(format "Created file %s in %s" filename path)))
+   :description "Create a new file with the specified content"
+   :args (list '(:name "path"             ; a list of argument specifications
+      :type string
+      :description "The directory where to create the file")
+               '(:name "filename"
+      :type string
+      :description "The name of the file to create")
+               '(:name "content"
+      :type string
+      :description "The content to write to the file"))
+   :category "filesystem")                ; An arbitrary label for grouping
+  (add-to-list 'gptel-directives
+      '(test-prompt . "This is my test agent prompt"))
   (setq gptel-default-mode 'org-mode)
   (setq gptel-model 'claude-sonnet-4-20250514
 	gptel-backend (gptel-make-anthropic "Claude"
@@ -240,9 +301,10 @@
 ;;---NOTE TAKING---start
 (use-package org
   :ensure t
+  :hook (org-mode . visual-line-mode)
   :config
   (setq org-capture-templates
-	'(("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
+'(("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
            "* TODO %?\n  %i\n")))
   ;; Set default directory for org files
   (setq org-directory "~/org-notes")
@@ -261,20 +323,22 @@
   :bind
   ("C-c a" . org-agenda)
   ("C-c n t" . (lambda () (interactive) (org-capture nil "t"))) ; will trigger the capture for t
+  ("C-c n T" . org-todo-list)
   ("C-c n c" . org-capture))
 
 (use-package denote
   :ensure t
-  :hook
-  ( ;; If you use Markdown or plain text files, then you want to make
-   ;; the Denote links clickable (Org renders links as buttons right
-   ;; away)
-   (text-mode . denote-fontify-links-mode-maybe)
-   ;; Apply colours to Denote names in Dired.  This applies to all
-   ;; directories.  Check `denote-dired-directories' for the specific
-   ;; directories you may prefer instead.  Then, instead of
-   ;; `denote-dired-mode', use `denote-dired-mode-in-directories'.
-   (dired-mode . denote-dired-mode))
+;  :hook
+;  ( ;; If you use Markdown or plain text files, then you want to make
+  ;; the Denote links clickable (Org renders links as buttons right
+  ;; away)
+;(text-mode . denote-fontify-links-mode-maybe)
+  ;; Apply colours to Denote names in Dired.  This applies to all
+  ;; directories.  Check `denote-dired-directories' for the specific
+  ;; directories you may prefer instead.  Then, instead of
+  ;; `denote-dired-mode', use `denote-dired-mode-in-directories'.
+;(dired-mode . denote-dired-mode)
+;   )
   :bind
   ;; Denote DOES NOT define any key bindings.  This is for the user to
   ;; decide.  For example:
@@ -336,3 +400,225 @@
   :config
   (setq cider-repl-pop-to-buffer-on-connect nil))
 ;;---PROGRAMMING---end
+
+(use-package ace-window
+  :ensure t
+  :init
+  (setq aw-dispatch-always t)
+  :bind (("M-o" . ace-window)))
+
+(use-package vterm
+  :ensure t
+  :commands (vterm vterm-other-window)
+  :config
+  (setq vterm-max-scrollback 10000)
+  (setq vterm-buffer-name-string "vterm %s"))
+
+;; (use-package claude-code-ide
+;;   :ensure t
+;;   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
+;;   :bind (("C-c i i" . claude-code-ide-menu)
+;; 	 ("C-c i r" . claude-code-ide-resume)
+;;          ("C-c i s" . claude-code-ide-stop))
+;;   :config
+;;   (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+
+(use-package meow
+  :ensure t
+  :init
+  (defun meow-setup ()
+    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+    ;; when i use 1.6 i should use this
+    ;;(meow-motion-define-key
+    (meow-motion-overwrite-define-key
+     ;; '("j" . meow-next)
+     ;; '("k" . meow-prev)
+     '("<escape>" . ignore)
+     )
+    (meow-leader-define-key
+     ;; Use SPC (0-9) for digit arguments.
+     ;; '("1" . meow-digit-argument)
+     ;; '("2" . meow-digit-argument)
+     ;; '("3" . meow-digit-argument)
+     ;; '("4" . meow-digit-argument)
+     ;; '("5" . meow-digit-argument)
+     ;; '("6" . meow-digit-argument)
+     ;; '("7" . meow-digit-argument)
+     ;; '("8" . meow-digit-argument)
+     ;; '("9" . meow-digit-argument)
+     ;; '("0" . meow-digit-argument)
+     ;; '("q" . gptel)
+     ;; '("t" . vterm)
+     ;; '("/" . meow-keypad-describe-key)
+     ;; '("?" . meow-cheatsheet)
+     )
+    (meow-normal-define-key
+     '("0" . meow-expand-0)
+     '("9" . meow-expand-9)
+     '("8" . meow-expand-8)
+     '("7" . meow-expand-7)
+     '("6" . meow-expand-6)
+     '("5" . meow-expand-5)
+     '("4" . meow-expand-4)
+     '("3" . meow-expand-3)
+     '("2" . meow-expand-2)
+     '("1" . meow-expand-1)
+     '("-" . negative-argument)
+     '(";" . meow-reverse)
+     '("," . meow-inner-of-thing)
+     '("." . meow-bounds-of-thing)
+     '("[" . meow-beginning-of-thing)
+     '("]" . meow-end-of-thing)
+     '("a" . meow-append)
+     '("A" . meow-open-below)
+     '("b" . meow-back-word)
+     '("B" . meow-back-symbol)
+     '("c" . meow-change)
+     '("d" . meow-delete)
+     '("D" . meow-backward-delete)
+     '("e" . meow-next-word)
+     '("E" . meow-next-symbol)
+     '("f" . meow-find)
+     '("g" . meow-cancel-selection)
+     '("G" . meow-grab)
+     '("h" . meow-left)
+     '("H" . meow-left-expand)
+     '("i" . meow-insert)
+     '("I" . meow-open-above)
+     '("j" . meow-next)
+     '("J" . meow-next-expand)
+     '("k" . meow-prev)
+     '("K" . meow-prev-expand)
+     '("l" . meow-right)
+     '("L" . meow-right-expand)
+     '("m" . meow-join)
+     '("n" . meow-search)
+     '("o" . meow-block)
+     '("O" . meow-to-block)
+     '("p" . meow-yank)
+     '("q" . meow-quit)
+     '("Q" . meow-goto-line)
+     '("r" . meow-replace)
+     '("R" . meow-swap-grab)
+     '("s" . meow-kill)
+     '("t" . meow-till)
+     '("u" . meow-undo)
+     '("U" . meow-undo-in-selection)
+     ;; '("v" . meow-visit) ; i want to only use isearch
+     '("w" . meow-mark-word)
+     '("W" . meow-mark-symbol)
+     '("x" . meow-line)
+     '("X" . meow-goto-line)
+     '("y" . meow-save)
+     '("Y" . meow-sync-grab)
+     '("z" . meow-pop-selection)
+     '("'" . repeat)
+     '("SPC" . ignore) ; meow-keypad original setting
+     '("<escape>" . ignore)))
+  :custom
+  (meow-use-clipboard t)
+  :config
+  (add-to-list 'meow-mode-state-list '(vterm-mode . insert))
+  (meow-global-mode 1)
+  (meow-setup))
+
+(use-package ibuffer
+  :bind ("C-x C-b" . ibuffer)
+  :config
+  ;;TODO not sure this is working prob need to fix
+  (setq ibuffer-saved-filter-groups
+        '(("default"
+           ("dired" (mode . dired-mode))
+           ("org" (mode . org-mode))
+           ("programming" (or
+                          (mode . python-mode)
+                          (mode . emacs-lisp-mode)))
+           ("emacs" (or
+                    (name . "^\\*scratch\\*$")
+                    (name . "^\\*Messages\\*$"))))))
+  (add-hook 'ibuffer-mode-hook
+            (lambda () (ibuffer-switch-to-saved-filter-groups "default"))))
+;; Extend isearch with commands
+(use-package isearch
+  :ensure nil
+  :defer t
+  :config
+  (defun my-occur-from-isearch ()
+    (interactive)
+    (let ((query (if isearch-regexp
+    isearch-string
+  (regexp-quote isearch-string))))
+      (isearch-update-ring isearch-string isearch-regexp)
+      (let (search-nonincremental-instead)
+        (ignore-errors (isearch-done t t)))
+      (occur query)))
+  (defun my-project-search-from-isearch ()
+    (interactive)
+    (let ((query (if isearch-regexp
+    isearch-string
+  (regexp-quote isearch-string))))
+      (isearch-update-ring isearch-string isearch-regexp)
+      (let (search-nonincremental-instead)
+        (ignore-errors (isearch-done t t)))
+      (project-find-regexp query)))
+ 
+      :bind
+  (:map isearch-mode-map
+   ("C-o" . my-occur-from-isearch)
+   ("C-f" . my-project-search-from-isearch)
+   ("C-d" . isearch-forward-symbol-at-point)))
+
+;; Quick navigation but only use with isearch
+;; remember action can be find under ?
+(use-package avy
+  :ensure t
+  :bind
+  (:map isearch-mode-map ("C-j" . avy-isearch))
+  :config
+  ;; Activate highlight over all windows
+  (setq avy-all-windows t))
+
+(use-package embark
+  :ensure t
+
+  :bind
+  (("C-;" . embark-act)         ;; pick some comfortable binding
+   ("M-." . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
+
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  ;; Add Embark to the mouse context menu. Also enable `context-menu-mode'.
+  ;; (context-menu-mode 1)
+  ;; (add-hook 'context-menu-functions #'embark-context-menu 100)
+
+  :config
+  ;; Integrate Avy and Embark
+    (defun avy-action-embark (pt)
+    (unwind-protect
+        (save-excursion
+          (goto-char pt)
+          (embark-act))
+      (select-window
+       (cdr (ring-ref avy-ring 0))))
+    t)
+
+  (setf (alist-get ?. avy-dispatch-alist) 'avy-action-embark)
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
