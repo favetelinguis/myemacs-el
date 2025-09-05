@@ -414,14 +414,14 @@
   (setq vterm-max-scrollback 10000)
   (setq vterm-buffer-name-string "vterm %s"))
 
-;; (use-package claude-code-ide
-;;   :ensure t
-;;   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-;;   :bind (("C-c i i" . claude-code-ide-menu)
-;; 	 ("C-c i r" . claude-code-ide-resume)
-;;          ("C-c i s" . claude-code-ide-stop))
-;;   :config
-;;   (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+(use-package claude-code-ide
+  :ensure nil
+  :vc (claude-code-ide :url "https://github.com/manzaltu/claude-code-ide.el" :branch "main")
+  :bind (("C-c i i" . claude-code-ide-menu)
+	 ("C-c i r" . claude-code-ide-resume)
+         ("C-c i s" . claude-code-ide-stop))
+  :config
+  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
 
 (use-package meow
   :ensure t
