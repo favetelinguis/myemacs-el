@@ -439,20 +439,19 @@
      )
     (meow-leader-define-key
      ;; Use SPC (0-9) for digit arguments.
-     ;; '("1" . meow-digit-argument)
-     ;; '("2" . meow-digit-argument)
-     ;; '("3" . meow-digit-argument)
-     ;; '("4" . meow-digit-argument)
-     ;; '("5" . meow-digit-argument)
-     ;; '("6" . meow-digit-argument)
-     ;; '("7" . meow-digit-argument)
-     ;; '("8" . meow-digit-argument)
-     ;; '("9" . meow-digit-argument)
-     ;; '("0" . meow-digit-argument)
-     ;; '("q" . gptel)
-     ;; '("t" . vterm)
-     ;; '("/" . meow-keypad-describe-key)
-     ;; '("?" . meow-cheatsheet)
+     '("1" . meow-digit-argument)
+     '("2" . meow-digit-argument)
+     '("3" . meow-digit-argument)
+     '("4" . meow-digit-argument)
+     '("5" . meow-digit-argument)
+     '("6" . meow-digit-argument)
+     '("7" . meow-digit-argument)
+     '("8" . meow-digit-argument)
+     '("9" . meow-digit-argument)
+     '("0" . meow-digit-argument)
+     '("j" . tabspaces-command-map)
+     '("/" . meow-keypad-describe-key)
+     '("?" . meow-cheatsheet)
      )
     (meow-normal-define-key
      '("0" . meow-expand-0)
@@ -515,7 +514,7 @@
      '("Y" . meow-sync-grab)
      '("z" . meow-pop-selection)
      '("'" . repeat)
-     '("SPC" . ignore) ; meow-keypad original setting
+     '("SPC" . meow-keypad) ; meow-keypad original setting or ignore to turn off
      '("<escape>" . ignore)))
   :custom
   (meow-use-clipboard t)
@@ -644,6 +643,7 @@
 
 (use-package justl
   :ensure t
-  :bind (("C-c j m" . justl)
-	 ("C-c j d" . justl-exec-default-recipe)
-	 ("C-c j j" . justl-exec-recipe-in-dir)))
+  ;; bind to r as in run
+  :bind (("C-c r m" . justl)
+	 ("C-c r E" . justl-exec-default-recipe)
+	 ("C-c r e" . justl-exec-recipe-in-dir)))
