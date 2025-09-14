@@ -50,6 +50,7 @@
   :ensure nil
   :bind
   (:map global-map
+	("M-o" . other-window)
 ("C-x k" . kill-current-buffer))
   :config
   ;; dissable creating lock files, i can now edit the same file from multiple emacs instances which can be bad
@@ -57,15 +58,16 @@
   ;; I dont really know what this does i got it from
   ;;https://blog.chmouel.com/posts/emacs-isearch/
   ;; I use it to get occur selected from isearch
-  (defun my-select-window (window &rest _)
-    "Select WINDOW for display-buffer-alist"
-    (select-window window))
-  (setq display-buffer-alist
-'(((or . ((derived-mode . occur-mode)))
-           (display-buffer-reuse-mode-window display-buffer-at-bottom)
-           (body-function . my-select-window)
-           (dedicated . t)
-           (preserve-size . (t . t)))))
+  ;; i have replaced this with popper or?
+;;   (defun my-select-window (window &rest _)
+;;     "Select WINDOW for display-buffer-alist"
+;;     (select-window window))
+;;   (setq display-buffer-alist
+;; '(((or . ((derived-mode . occur-mode)))
+;;            (display-buffer-reuse-mode-window display-buffer-at-bottom)
+;;            (body-function . my-select-window)
+;;            (dedicated . t)
+;;            (preserve-size . (t . t)))))
 
   (setq ring-bell-function 'ignore)
   ;; allow all disabled commands without prompting
@@ -227,16 +229,12 @@
 			:models '(claude-sonnet-4-20250514)
 			:key (getenv "ANTHROPIC_API_KEY"))))
 
-
-
 (use-package x509-mode
   :ensure t)
 
 (use-package jwt
   :ensure t
   :commands (jwt-decode jwt-encode))
-
-
 
 ;; LSP support
 (use-package eglot
@@ -306,13 +304,12 @@
   :hook (org-mode . visual-line-mode)
   :config
   (setq org-capture-templates
-'(("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
-           "* TODO %?\n  %i\n")))
+	'(("t" "Todo" entry (file+headline (expand-file-name "tasks.org" org-directory) "Tasks")
+           "* TODO %?\n  %i\n")
+	  ("n" "Note" entry (file+headline (expand-file-name "notes.org" org-directory) "Notes")
+           "* %?\nEntered on %U  %i\n")))
   ;; Set default directory for org files
   (setq org-directory "~/org-notes")
-  
-  ;; Set default notes file
-  (setq org-default-notes-file (expand-file-name "todo.org" org-directory))
   
   ;; Agenda files location
   (setq org-agenda-files (list org-directory))
@@ -323,107 +320,18 @@
   
   ;; Basic keybindings
   :bind
-  ("C-c a" . org-agenda)
+  ("C-c n a" . org-agenda)
   ("C-c n t" . (lambda () (interactive) (org-capture nil "t"))) ; will trigger the capture for t
+  ("C-c n n" . (lambda () (interactive) (org-capture nil "n"))) ; will trigger the capture for t
   ("C-c n T" . org-todo-list)
   ("C-c n c" . org-capture))
-
-(use-package denote
-  :ensure t
-;  :hook
-;  ( ;; If you use Markdown or plain text files, then you want to make
-  ;; the Denote links clickable (Org renders links as buttons right
-  ;; away)
-;(text-mode . denote-fontify-links-mode-maybe)
-  ;; Apply colours to Denote names in Dired.  This applies to all
-  ;; directories.  Check `denote-dired-directories' for the specific
-  ;; directories you may prefer instead.  Then, instead of
-  ;; `denote-dired-mode', use `denote-dired-mode-in-directories'.
-;(dired-mode . denote-dired-mode)
-;   )
-  :bind
-  ;; Denote DOES NOT define any key bindings.  This is for the user to
-  ;; decide.  For example:
-  ( :map global-map
-    ("C-c n n" . denote)
-    ("C-c n N" . denote-region)
-    ("C-c n d" . denote-dired)
-    ("C-c n g" . denote-grep)
-    ;; If you intend to use Denote with a variety of file types, it is
-    ;; easier to bind the link-related commands to the `global-map', as
-    ;; shown here.  Otherwise follow the same pattern for `org-mode-map',
-    ;; `markdown-mode-map', and/or `text-mode-map'.
-    ("C-c n l" . denote-link)
-    ("C-c n L" . denote-add-links)
-    ("C-c n b" . denote-backlinks)
-    ("C-c n q c" . denote-query-contents-link) ; create link that triggers a grep
-    ("C-c n q f" . denote-query-filenames-link) ; create link that triggers a dired
-    ;; Note that `denote-rename-file' can work from any context, not just
-    ;; Dired bufffers.  That is why we bind it here to the `global-map'.
-    ("C-c n r" . denote-rename-file)
-    ("C-c n R" . denote-rename-file-using-front-matter)
-
-    ;; Key bindings specifically for Dired.
-    :map dired-mode-map
-    ("C-c C-d C-i" . denote-dired-link-marked-notes)
-    ("C-c C-d C-r" . denote-dired-rename-files)
-    ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
-    ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
-
-  :config
-  ;; Remember to check the doc string of each of those variables.
-  (setq denote-directory (expand-file-name "~/denotes/"))
-  (setq denote-save-buffers nil)
-  (setq denote-known-keywords '()) ; can add default keywords if i want
-  (setq denote-infer-keywords t)
-  (setq denote-sort-keywords t)
-  (setq denote-prompts '(title keywords))
-  (setq denote-excluded-directories-regexp nil)
-  (setq denote-excluded-keywords-regexp nil)
-  (setq denote-rename-confirmations '(rewrite-front-matter modify-file-name))
-
-  ;; Pick dates, where relevant, with Org's advanced interface:
-  (setq denote-date-prompt-use-org-read-date t)
-
-  ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
-  (denote-rename-buffer-mode 1))
 ;;---NOTE TAKING---end
-
-;;---PROGRAMMING---start
-(use-package typescript-mode
-  :ensure t
-  :mode "\\.ts\\'"
-  :hook (typescript-mode . eglot-ensure)
-  :custom
-  (typescript-indent-level 2))
 
 (use-package cider
   :ensure t
   :config
   (setq cider-repl-pop-to-buffer-on-connect nil))
 ;;---PROGRAMMING---end
-
-(use-package ace-window
-  :ensure t
-  :init
-  (setq aw-dispatch-always t)
-  :bind (("M-o" . ace-window)))
-
-(use-package vterm
-  :ensure t
-  :commands (vterm vterm-other-window)
-  :config
-  (setq vterm-max-scrollback 10000)
-  (setq vterm-buffer-name-string "vterm %s"))
-
-(use-package claude-code-ide
-  :ensure nil
-  :vc (claude-code-ide :url "https://github.com/manzaltu/claude-code-ide.el" :branch "main")
-  :bind (("C-c i i" . claude-code-ide-menu)
-	 ("C-c i r" . claude-code-ide-resume)
-         ("C-c i s" . claude-code-ide-stop))
-  :config
-  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
 
 (use-package meow
   :ensure t
@@ -449,7 +357,9 @@
      '("8" . meow-digit-argument)
      '("9" . meow-digit-argument)
      '("0" . meow-digit-argument)
-     '("j" . tabspaces-command-map)
+     '("j" . tabspaces-open-or-create-project-and-workspace)
+     '("b" . tabspaces-switch-buffer-and-tab)
+     `("p" . ,project-prefix-map)
      '("/" . meow-keypad-describe-key)
      '("?" . meow-cheatsheet)
      )
@@ -466,6 +376,7 @@
      '("1" . meow-expand-1)
      '("-" . negative-argument)
      '(";" . meow-reverse)
+     '(":" . meow-goto-line)
      '("," . meow-inner-of-thing)
      '("." . meow-bounds-of-thing)
      '("[" . meow-beginning-of-thing)
@@ -505,7 +416,7 @@
      '("t" . meow-till)
      '("u" . meow-undo)
      '("U" . meow-undo-in-selection)
-     ;; '("v" . meow-visit) ; i want to only use isearch
+     '("v" . meow-visit) ; i want to only use isearch
      '("w" . meow-mark-word)
      '("W" . meow-mark-symbol)
      '("x" . meow-line)
@@ -523,22 +434,6 @@
   (meow-global-mode 1)
   (meow-setup))
 
-(use-package ibuffer
-  :bind ("C-x C-b" . ibuffer)
-  :config
-  ;;TODO not sure this is working prob need to fix
-  (setq ibuffer-saved-filter-groups
-        '(("default"
-           ("dired" (mode . dired-mode))
-           ("org" (mode . org-mode))
-           ("programming" (or
-                          (mode . python-mode)
-                          (mode . emacs-lisp-mode)))
-           ("emacs" (or
-                    (name . "^\\*scratch\\*$")
-                    (name . "^\\*Messages\\*$"))))))
-  (add-hook 'ibuffer-mode-hook
-            (lambda () (ibuffer-switch-to-saved-filter-groups "default"))))
 ;; Extend isearch with commands
 (use-package isearch
   :ensure nil
@@ -569,61 +464,6 @@
    ("C-f" . my-project-search-from-isearch)
    ("C-d" . isearch-forward-symbol-at-point)))
 
-;; Quick navigation but only use with isearch
-;; remember action can be find under ?
-(use-package avy
-  :ensure t
-  :bind
-  (:map isearch-mode-map ("C-j" . avy-isearch))
-  :config
-  ;; Activate highlight over all windows
-  (setq avy-all-windows t))
-
-(use-package embark
-  :ensure t
-
-  :bind
-  (("C-;" . embark-act)         ;; pick some comfortable binding
-   ("M-." . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
-  :init
-
-  ;; Optionally replace the key help with a completing-read interface
-  (setq prefix-help-command #'embark-prefix-help-command)
-
-  ;; Show the Embark target at point via Eldoc. You may adjust the
-  ;; Eldoc strategy, if you want to see the documentation from
-  ;; multiple providers. Beware that using this can be a little
-  ;; jarring since the message shown in the minibuffer can be more
-  ;; than one line, causing the modeline to move up and down:
-
-  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-
-  ;; Add Embark to the mouse context menu. Also enable `context-menu-mode'.
-  ;; (context-menu-mode 1)
-  ;; (add-hook 'context-menu-functions #'embark-context-menu 100)
-
-  :config
-  ;; Integrate Avy and Embark
-    (defun avy-action-embark (pt)
-    (unwind-protect
-        (save-excursion
-          (goto-char pt)
-          (embark-act))
-      (select-window
-       (cdr (ring-ref avy-ring 0))))
-    t)
-
-  (setf (alist-get ?. avy-dispatch-alist) 'avy-action-embark)
-
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
-
 (use-package tabspaces
   :ensure t
   :hook (after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup. 
@@ -645,5 +485,21 @@
   :ensure t
   ;; bind to r as in run
   :bind (("C-c r m" . justl)
-	 ("C-c r E" . justl-exec-default-recipe)
-	 ("C-c r e" . justl-exec-recipe-in-dir)))
+	 ("C-c r d" . justl-exec-default-recipe)
+	 ("C-c r r" . justl-exec-recipe-in-dir)))
+
+(use-package popper
+  :ensure t ; or :straight t
+  :bind (("C-`"   . popper-toggle)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-group-function #'popper-group-by-project) 
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          help-mode
+          compilation-mode))
+  (popper-mode +1)
+  (popper-echo-mode +1))                ; For echo area hints
