@@ -487,6 +487,8 @@
 
 (use-package justl
   :ensure t
+  ;; :config
+  ;; (setq justl-per-recipe-buffer t)
   ;; bind to r as in run
   :bind (("C-c r m" . justl)
 	 ("C-c r d" . justl-exec-default-recipe)
@@ -503,6 +505,7 @@
         '("\\*Messages\\*"
           "Output\\*$"
 	  "*vc-git.*\\*$"
+	  "*just.*\\*$"
           "\\*Async Shell Command\\*"
           help-mode
           compilation-mode))
