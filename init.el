@@ -191,8 +191,8 @@
 
 (use-package gptel
   :ensure t
-  :hook ((gptel-post-stream . gptel-auto-scroll)
-(gptel-post-response-functions . gptel-end-of-response))
+;;   :hook ((gptel-post-stream . gptel-auto-scroll)
+;; (gptel-post-response-functions . gptel-end-of-response))
   :bind
   ( :map global-map
     ("C-c q r" . gptel-rewrite)
@@ -200,32 +200,19 @@
     ("C-c q a" . gptel-add)
     ("C-c q c" . gptel-context-remove-all)
     ("C-c q f" . gptel-add-file)
-    ("C-c q q" . gptel-send))
+    ("C-c q q" . gptel-send-with-options)
+    ("C-c q Q" . gptel-send))
   :config
-  (gptel-make-tool
-   :name "create_file"                    ; javascript-style  snake_case name
-   :function (lambda (path filename content)   ; the function that runs
-               (let ((full-path (expand-file-name filename path)))
-(with-temp-buffer
-                   (insert content)
-                   (write-file full-path))
-(format "Created file %s in %s" filename path)))
-   :description "Create a new file with the specified content"
-   :args (list '(:name "path"             ; a list of argument specifications
-      :type string
-      :description "The directory where to create the file")
-               '(:name "filename"
-      :type string
-      :description "The name of the file to create")
-               '(:name "content"
-      :type string
-      :description "The content to write to the file"))
-   :category "filesystem")                ; An arbitrary label for grouping
-  (add-to-list 'gptel-directives
-      '(test-prompt . "This is my test agent prompt"))
+  (defun gptel-send-with-options (&optional arg)
+  "Send query.  With prefix ARG open gptel's menu instead. in gptel menu select options and save with c-x c-s"
+  (interactive "P")
+  (if arg
+      (call-interactively 'gptel-menu)
+    (gptel--suffix-send (transient-args 'gptel-menu))))
+   
   (setq gptel-default-mode 'org-mode)
   (setq gptel-model 'claude-sonnet-4-20250514
-	gptel-backend (gptel-make-anthropic "Claude"
+	gptel-backend (gptel-make-anthropic "AICHAT"
 			:stream t
 			:models '(claude-sonnet-4-20250514)
 			:key (getenv "ANTHROPIC_API_KEY"))))
@@ -363,7 +350,6 @@
      '("j" . tabspaces-open-or-create-project-and-workspace)
      '("b" . tabspaces-switch-buffer-and-tab)
      `("p" . ,project-prefix-map)
-     
      '("/" . meow-keypad-describe-key)
      '("?" . meow-cheatsheet)
      )
@@ -465,7 +451,7 @@
       :bind
   (:map isearch-mode-map
    ("C-o" . my-occur-from-isearch)
-   ("C-f" . my-project-search-from-isearch)
+   ("C-g" . my-project-search-from-isearch)
    ("C-d" . isearch-forward-symbol-at-point)))
 
 (use-package tabspaces
@@ -506,6 +492,7 @@
           "Output\\*$"
 	  "*vc-git.*\\*$"
 	  "*just.*\\*$"
+          "\\*AICHAT\\*"
           "\\*Async Shell Command\\*"
           help-mode
           compilation-mode))
