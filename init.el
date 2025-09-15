@@ -118,7 +118,7 @@
   (menu-bar-mode -1)      ;; Disable menu bar
   (scroll-bar-mode -1)    ;; Disable scroll bar
   (tooltip-mode -1)      ;; Disable tooltips
-  (desktop-save-mode 1)
+  ;; (desktop-save-mode 1)
   ;; Disable initial scratch message
   (setq initial-scratch-message nil)
   ;; No blinking cursor
@@ -198,6 +198,7 @@
     ("C-c q r" . gptel-rewrite)
     ("C-c q m" . gptel-menu)
     ("C-c q a" . gptel-add)
+    ("C-c q c" . gptel-context-remove-all)
     ("C-c q f" . gptel-add-file)
     ("C-c q q" . gptel-send))
   :config
@@ -303,14 +304,11 @@
   :ensure t
   :hook (org-mode . visual-line-mode)
   :config
-  (setq org-capture-templates
-	'(("t" "Todo" entry (file+headline (expand-file-name "tasks.org" org-directory) "Tasks")
-           "* TODO %?\n  %i\n")
-	  ("n" "Note" entry (file+headline (expand-file-name "notes.org" org-directory) "Notes")
-           "* %?\nEntered on %U  %i\n")))
   ;; Set default directory for org files
   (setq org-directory "~/org-notes")
-  
+  (setq org-default-todo-file (expand-file-name "tasks.org" org-directory))
+  (setq org-default-notes-file (expand-file-name "notes.org" org-directory))
+
   ;; Agenda files location
   (setq org-agenda-files (list org-directory))
   
@@ -318,6 +316,11 @@
   (unless (file-exists-p org-directory)
     (make-directory org-directory t))
   
+  (setq org-capture-templates
+	'(("t" "Todo" entry (file+headline org-default-todo-file "Tasks")
+           "* TODO %?\n  %i\n")
+	  ("n" "Note" entry (file+headline org-default-notes-file "Notes")
+           "* %?\nEntered on %U  %i\n")))
   ;; Basic keybindings
   :bind
   ("C-c n a" . org-agenda)
