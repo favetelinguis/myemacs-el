@@ -363,6 +363,7 @@
      '("j" . tabspaces-open-or-create-project-and-workspace)
      '("b" . tabspaces-switch-buffer-and-tab)
      `("p" . ,project-prefix-map)
+     
      '("/" . meow-keypad-describe-key)
      '("?" . meow-cheatsheet)
      )
@@ -501,6 +502,7 @@
   (setq popper-reference-buffers
         '("\\*Messages\\*"
           "Output\\*$"
+	  "*vc-git.*\\*$"
           "\\*Async Shell Command\\*"
           help-mode
           compilation-mode))
