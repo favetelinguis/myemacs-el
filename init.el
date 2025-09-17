@@ -14,11 +14,11 @@
            ("dired" (mode . dired-mode))
            ("org" (mode . org-mode))
            ("programming" (or
-                          (mode . python-mode)
-                          (mode . emacs-lisp-mode)))
+                           (mode . python-mode)
+                           (mode . emacs-lisp-mode)))
            ("emacs" (or
-                    (name . "^\\*scratch\\*$")
-                    (name . "^\\*Messages\\*$"))))))
+                     (name . "^\\*scratch\\*$")
+                     (name . "^\\*Messages\\*$"))))))
   (add-hook 'ibuffer-mode-hook
             (lambda () (ibuffer-switch-to-saved-filter-groups "default"))))
 
@@ -51,7 +51,7 @@
   :bind
   (:map global-map
 	("M-o" . other-window)
-("C-x k" . kill-current-buffer))
+	("C-x k" . kill-current-buffer))
   :config
   ;; dissable creating lock files, i can now edit the same file from multiple emacs instances which can be bad
   (setq create-lockfiles nil)
@@ -59,15 +59,15 @@
   ;;https://blog.chmouel.com/posts/emacs-isearch/
   ;; I use it to get occur selected from isearch
   ;; i have replaced this with popper or?
-;;   (defun my-select-window (window &rest _)
-;;     "Select WINDOW for display-buffer-alist"
-;;     (select-window window))
-;;   (setq display-buffer-alist
-;; '(((or . ((derived-mode . occur-mode)))
-;;            (display-buffer-reuse-mode-window display-buffer-at-bottom)
-;;            (body-function . my-select-window)
-;;            (dedicated . t)
-;;            (preserve-size . (t . t)))))
+  ;;   (defun my-select-window (window &rest _)
+  ;;     "Select WINDOW for display-buffer-alist"
+  ;;     (select-window window))
+  ;;   (setq display-buffer-alist
+  ;; '(((or . ((derived-mode . occur-mode)))
+  ;;            (display-buffer-reuse-mode-window display-buffer-at-bottom)
+  ;;            (body-function . my-select-window)
+  ;;            (dedicated . t)
+  ;;            (preserve-size . (t . t)))))
 
   (setq ring-bell-function 'ignore)
   ;; allow all disabled commands without prompting
@@ -83,7 +83,7 @@
                       :weight 'normal
                       :width 'normal)
   :custom
- 
+  
   ;; Curfu
   ;; TAB cycle if there are only few candidates
   ;; (completion-cycle-threshold 3)
@@ -126,14 +126,14 @@
   (setq inhibit-startup-message t)
   ;; Put auto-save files in a dedicated directory
   (setq auto-save-file-name-transforms
-`((".*" ,(concat user-emacs-directory "auto-save/") t)))
+	`((".*" ,(concat user-emacs-directory "auto-save/") t)))
 
   ;; Create the directory if it doesn't exist
   (make-directory (concat user-emacs-directory "auto-save/") t)
 
   ;; Put backup files in a dedicated directory
   (setq backup-directory-alist
-`((".*" . ,(concat user-emacs-directory "backup/"))))
+	`((".*" . ,(concat user-emacs-directory "backup/"))))
 
   (make-directory (concat user-emacs-directory "backup/") t)
   )
@@ -157,7 +157,9 @@
   ;; :hook ((prog-mode . corfu-mode)
   ;;        (shell-mode . corfu-mode)
   ;;        (eshell-mode . corfu-mode))
-
+  :config
+  (setq corfu-auto t
+	corfu-quit-no-match 'separator) 
   :init
 
   ;; Recommended: Enable Corfu globally.  Recommended since many modes provide
@@ -191,8 +193,8 @@
 
 (use-package gptel
   :ensure t
-;;   :hook ((gptel-post-stream . gptel-auto-scroll)
-;; (gptel-post-response-functions . gptel-end-of-response))
+  ;;   :hook ((gptel-post-stream . gptel-auto-scroll)
+  ;; (gptel-post-response-functions . gptel-end-of-response))
   :bind
   ( :map global-map
     ("C-c q r" . gptel-rewrite)
@@ -204,12 +206,12 @@
     ("C-c q Q" . gptel-send))
   :config
   (defun gptel-send-with-options (&optional arg)
-  "Send query.  With prefix ARG open gptel's menu instead. in gptel menu select options and save with c-x c-s"
-  (interactive "P")
-  (if arg
-      (call-interactively 'gptel-menu)
-    (gptel--suffix-send (transient-args 'gptel-menu))))
-   
+    "Send query.  With prefix ARG open gptel's menu instead. in gptel menu select options and save with c-x c-s"
+    (interactive "P")
+    (if arg
+	(call-interactively 'gptel-menu)
+      (gptel--suffix-send (transient-args 'gptel-menu))))
+  
   (setq gptel-default-mode 'org-mode)
   (setq gptel-model 'claude-sonnet-4-20250514
 	gptel-backend (gptel-make-anthropic "AICHAT"
@@ -223,14 +225,6 @@
 (use-package jwt
   :ensure t
   :commands (jwt-decode jwt-encode))
-
-;; LSP support
-(use-package eglot
-  :ensure nil
-  :hook ((typescript-mode js-mode) . eglot-ensure)
-  :custom
-  (eglot-autoshutdown t)
-  (eglot-confirm-server-initiated-edits nil))
 
 ;; Used to get direnv working when launching in sway
 (use-package exec-path-from-shell
@@ -350,6 +344,7 @@
      '("j" . tabspaces-open-or-create-project-and-workspace)
      '("b" . tabspaces-switch-buffer-and-tab)
      `("p" . ,project-prefix-map)
+     '("l" . "C-c l")
      '("/" . meow-keypad-describe-key)
      '("?" . meow-cheatsheet)
      )
@@ -432,8 +427,8 @@
   (defun my-occur-from-isearch ()
     (interactive)
     (let ((query (if isearch-regexp
-    isearch-string
-  (regexp-quote isearch-string))))
+		     isearch-string
+		   (regexp-quote isearch-string))))
       (isearch-update-ring isearch-string isearch-regexp)
       (let (search-nonincremental-instead)
         (ignore-errors (isearch-done t t)))
@@ -441,18 +436,18 @@
   (defun my-project-search-from-isearch ()
     (interactive)
     (let ((query (if isearch-regexp
-    isearch-string
-  (regexp-quote isearch-string))))
+		     isearch-string
+		   (regexp-quote isearch-string))))
       (isearch-update-ring isearch-string isearch-regexp)
       (let (search-nonincremental-instead)
         (ignore-errors (isearch-done t t)))
       (project-find-regexp query)))
- 
-      :bind
+  
+  :bind
   (:map isearch-mode-map
-   ("C-o" . my-occur-from-isearch)
-   ("C-g" . my-project-search-from-isearch)
-   ("C-d" . isearch-forward-symbol-at-point)))
+	("C-o" . my-occur-from-isearch)
+	("C-g" . my-project-search-from-isearch)
+	("C-d" . isearch-forward-symbol-at-point)))
 
 (use-package tabspaces
   :ensure t
@@ -470,6 +465,9 @@
   (tabspaces-session t)
   (tabspaces-session-auto-restore t)
   (tab-bar-new-tab-choice "*scratch*"))
+
+(use-package just-mode
+  :ensure t)
 
 (use-package justl
   :ensure t
@@ -490,7 +488,7 @@
   (setq popper-reference-buffers
         '("\\*Messages\\*"
           "Output\\*$"
-	  "*vc-git.*\\*$"
+	  ;; "*vc-git.*\\*$"
 	  "*just.*\\*$"
           "\\*AICHAT\\*"
           "\\*Async Shell Command\\*"
@@ -498,3 +496,36 @@
           compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
+
+;; each language will setup eglot config in its module
+(use-package eglot
+  :ensure t
+  :custom
+  (eglot-autoshutdown t)
+  (eglot-confirm-server-initiated-edits nil)
+  :bind
+  (:map eglot-mode-map
+	("C-c l a" . eglot-code-actions)
+	("C-c l r" . eglot-rename)
+	("C-c l f" . eglot-format)
+	("C-c l d" . eglot-find-declaration)
+	("C-c l i" . eglot-find-implementation)
+	("C-c l t" . eglot-find-typeDefinition)
+	("C-c l h" . eldoc)
+	("C-c l s" . eglot-shutdown)
+	("C-c l R" . eglot-reconnect)))
+
+;; disable other language mode formatters and use apheleia for all formatting
+(use-package apheleia
+  :ensure t
+  :config
+  (apheleia-global-mode +1)
+  :hook
+  (prog-mode . apheleia-mode))
+
+;; load my local packages
+(add-to-list 'load-path "~/.config/emacs/lisp/")
+(use-package my-zig
+  :ensure nil
+  :if (file-exists-p "~/.config/emacs/lisp/my-zig.el"))
+
