@@ -317,108 +317,6 @@
   (setq cider-repl-pop-to-buffer-on-connect nil))
 ;;---PROGRAMMING---end
 
-(use-package meow
-  :ensure t
-  :init
-  (defun meow-setup ()
-    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-    ;; when i use 1.6 i should use this
-    ;;(meow-motion-define-key
-    (meow-motion-overwrite-define-key
-     ;; '("j" . meow-next)
-     ;; '("k" . meow-prev)
-     '("<escape>" . ignore)
-     )
-    (meow-leader-define-key
-     ;; Use SPC (0-9) for digit arguments.
-     '("1" . meow-digit-argument)
-     '("2" . meow-digit-argument)
-     '("3" . meow-digit-argument)
-     '("4" . meow-digit-argument)
-     '("5" . meow-digit-argument)
-     '("6" . meow-digit-argument)
-     '("7" . meow-digit-argument)
-     '("8" . meow-digit-argument)
-     '("9" . meow-digit-argument)
-     '("0" . meow-digit-argument)
-     '("j" . tabspaces-open-or-create-project-and-workspace)
-     '("b" . tabspaces-switch-buffer-and-tab)
-     `("p" . ,project-prefix-map)
-     '("l" . "C-c l")
-     '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet)
-     )
-    (meow-normal-define-key
-     '("0" . meow-expand-0)
-     '("9" . meow-expand-9)
-     '("8" . meow-expand-8)
-     '("7" . meow-expand-7)
-     '("6" . meow-expand-6)
-     '("5" . meow-expand-5)
-     '("4" . meow-expand-4)
-     '("3" . meow-expand-3)
-     '("2" . meow-expand-2)
-     '("1" . meow-expand-1)
-     '("-" . negative-argument)
-     '(";" . meow-reverse)
-     '(":" . meow-goto-line)
-     '("," . meow-inner-of-thing)
-     '("." . meow-bounds-of-thing)
-     '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
-     '("a" . meow-append)
-     '("A" . meow-open-below)
-     '("b" . meow-back-word)
-     '("B" . meow-back-symbol)
-     '("c" . meow-change)
-     '("d" . meow-delete)
-     '("D" . meow-backward-delete)
-     '("e" . meow-next-word)
-     '("E" . meow-next-symbol)
-     '("f" . meow-find)
-     '("g" . meow-cancel-selection)
-     '("G" . meow-grab)
-     '("h" . meow-left)
-     '("H" . meow-left-expand)
-     '("i" . meow-insert)
-     '("I" . meow-open-above)
-     '("j" . meow-next)
-     '("J" . meow-next-expand)
-     '("k" . meow-prev)
-     '("K" . meow-prev-expand)
-     '("l" . meow-right)
-     '("L" . meow-right-expand)
-     '("m" . meow-join)
-     '("n" . meow-search)
-     '("o" . meow-block)
-     '("O" . meow-to-block)
-     '("p" . meow-yank)
-     '("q" . meow-quit)
-     '("Q" . meow-goto-line)
-     '("r" . meow-replace)
-     '("R" . meow-swap-grab)
-     '("s" . meow-kill)
-     '("t" . meow-till)
-     '("u" . meow-undo)
-     '("U" . meow-undo-in-selection)
-     '("v" . meow-visit) ; i want to only use isearch
-     '("w" . meow-mark-word)
-     '("W" . meow-mark-symbol)
-     '("x" . meow-line)
-     '("X" . meow-goto-line)
-     '("y" . meow-save)
-     '("Y" . meow-sync-grab)
-     '("z" . meow-pop-selection)
-     '("'" . repeat)
-     '("SPC" . meow-keypad) ; meow-keypad original setting or ignore to turn off
-     '("<escape>" . ignore)))
-  :custom
-  (meow-use-clipboard t)
-  :config
-  (add-to-list 'meow-mode-state-list '(vterm-mode . insert))
-  (meow-global-mode 1)
-  (meow-setup))
-
 ;; Extend isearch with commands
 (use-package isearch
   :ensure nil
@@ -446,25 +344,8 @@
   :bind
   (:map isearch-mode-map
 	("C-o" . my-occur-from-isearch)
-	("C-g" . my-project-search-from-isearch)
+	("C-f" . my-project-search-from-isearch)
 	("C-d" . isearch-forward-symbol-at-point)))
-
-(use-package tabspaces
-  :ensure t
-  :hook (after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup. 
-  :commands (tabspaces-switch-or-create-workspace
-             tabspaces-open-or-create-project-and-workspace)
-  :custom
-  (tabspaces-use-filtered-buffers-as-default t)
-  (tabspaces-default-tab "Default")
-  (tabspaces-remove-to-default t)
-  (tabspaces-include-buffers '("*scratch*"))
-  (tabspaces-initialize-project-with-todo nil)
-  (tabspaces-todo-file-name "project-todo.org")
-  ;; sessions
-  (tabspaces-session t)
-  (tabspaces-session-auto-restore t)
-  (tab-bar-new-tab-choice "*scratch*"))
 
 (use-package just-mode
   :ensure t)
@@ -522,10 +403,23 @@
   (apheleia-global-mode +1)
   :hook
   (prog-mode . apheleia-mode))
+(use-package flymake
+  :bind (:map prog-mode-map
+              ("M-n" . flymake-goto-next-error)
+              ("M-p" . flymake-goto-prev-error)))
 
 ;; load my local packages
 (add-to-list 'load-path "~/.config/emacs/lisp/")
 (use-package my-zig
   :ensure nil
   :if (file-exists-p "~/.config/emacs/lisp/my-zig.el"))
+(use-package my-ts
+  :ensure nil
+  :if (file-exists-p "~/.config/emacs/lisp/my-ts.el"))
+(use-package my-go
+  :ensure nil
+  :if (file-exists-p "~/.config/emacs/lisp/my-go.el"))
+(use-package my-rust
+  :ensure nil
+  :if (file-exists-p "~/.config/emacs/lisp/my-rust.el"))
 
