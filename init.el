@@ -50,6 +50,7 @@
   :ensure nil
   :bind
   (:map global-map
+	("C-c C-c" . project-recompile)
 	("M-o" . other-window)
 	("C-x k" . kill-current-buffer))
   :config
@@ -398,25 +399,6 @@ ARGS are additional arguments to pass to the recipe."
 	 ("C-c j j" . my-justl-rerun-last-command)
 	 ("C-c j t" . my-justl-test)
 	 ("C-c j f" . my-justl-test-current-file)))
-
-(use-package popper
-  :ensure t ; or :straight t
-  :bind (("C-`"   . popper-toggle)
-         ("M-`"   . popper-cycle)
-         ("C-M-`" . popper-toggle-type))
-  :init
-  ;; (setq popper-group-function #'popper-group-by-project) 
-  (setq popper-reference-buffers
-        '("\\*Messages\\*"
-          "Output\\*$"
-	  ;; "*vc-git.*\\*$"
-	  "*just.*\\*$"
-          "\\*AICHAT\\*"
-          "\\*Async Shell Command\\*"
-          help-mode
-          compilation-mode))
-  (popper-mode +1)
-  (popper-echo-mode +1))                ; For echo area hints
 
 ;; each language will setup eglot config in its module
 (use-package eglot
