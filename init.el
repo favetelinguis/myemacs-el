@@ -50,7 +50,7 @@
   :ensure nil
   :bind
   (:map global-map
-	("C-c C-c" . project-recompile)
+	("C-c c" . project-recompile)
 	("M-o" . other-window)
 	("C-x k" . kill-current-buffer))
   :config
