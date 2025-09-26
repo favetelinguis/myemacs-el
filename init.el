@@ -355,51 +355,6 @@
 (use-package just-mode
   :ensure t)
 
-(use-package justl
-  :ensure t
-  :config
-  (defun my-justl-rerun-last-command ()
-    "Rerun the last justl command from any buffer."
-    (interactive)
-    (let ((justl-buffer (get-buffer "*just*")))
-      (if justl-buffer
-          (with-current-buffer justl-buffer
-            (if (bound-and-true-p justl--compile-command)
-		(justl-recompile)
-              (message "No previous justl command found")))
-	(message "No *just* buffer found"))))
-  (defun my-justl-run-recipe-with-args (recipe-name &rest args)
-    "Run a justl recipe with custom arguments.
-RECIPE-NAME is the name of the recipe to run.
-ARGS are additional arguments to pass to the recipe."
-    (let* ((justfile (justl--find-justfile default-directory)))
-      (if justfile
-          (let ((default-directory (f-dirname justfile)))
-            (justl--exec justl-executable
-			 recipe-name
-			 (append (transient-args 'justl-help-popup)
-				 (cons recipe-name args))))
-	(error "No justfile found in current directory or parents"))))
-  (defun my-justl-test ()
-    "Run 'just test'"
-    (interactive)
-    (my-justl-run-recipe-with-args "test"))
-  (defun my-justl-test-current-file ()
-    "Run 'just test' with the current buffer's filename as argument."
-    (interactive)
-    (if-let ((filename (buffer-file-name)))
-	(my-justl-run-recipe-with-args "test" filename)
-      (message "Current buffer is not visiting a file")))
-  ;; :config
-  ;; (setq justl-per-recipe-buffer t)
-  ;; bind to r as in run
-  :bind (("C-c j m" . justl)
-	 ("C-c j d" . justl-exec-default-recipe)
-	 ("C-c j r" . justl-exec-recipe-in-dir)
-	 ("C-c j j" . my-justl-rerun-last-command)
-	 ("C-c j t" . my-justl-test)
-	 ("C-c j f" . my-justl-test-current-file)))
-
 ;; each language will setup eglot config in its module
 (use-package eglot
   :ensure t
