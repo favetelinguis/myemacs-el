@@ -53,6 +53,10 @@
 	("M-o" . other-window)
 	("C-x k" . kill-current-buffer))
   :config
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (add-hook 'prog-mode-hook (lambda () (setq truncate-lines t))) ; prevent long line warpping in prog modes
+  (global-subword-mode -1)
+  (global-superword-mode 1)
   ;; dissable creating lock files, i can now edit the same file from multiple emacs instances which can be bad
   (setq create-lockfiles nil)
   ;; I dont really know what this does i got it from
@@ -403,6 +407,7 @@
   (apheleia-global-mode +1)
   :hook
   (prog-mode . apheleia-mode))
+
 (use-package flymake
   :bind (:map prog-mode-map
               ("M-n" . flymake-goto-next-error)
