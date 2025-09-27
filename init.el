@@ -35,9 +35,27 @@
 (use-package emacs
   :ensure nil
   :bind
+  ;; start window management
+  (setq switch-to-buffer-obey-display-actions t
+	switch-to-buffer-in-dedicated-window 'pop)
+  ;; (set-frame-parameter (selected-frame) 'window-state nil) ; eval this to reset a bad state if i play around with window stuff, should always be commented out in init.el
+  ;; toggle side window using C-x w s
+  (setq display-buffer-alist
+	'(("\\*compilation\\*"
+           (display-buffer-in-side-window)
+           (side . right)
+           (window-height . 0.3)
+           (window-width . 0.4))  ; 40% of frame width
+          ("\\*eldoc\\*"
+           (display-buffer-in-side-window)
+           (side . right)
+           (window-height . 0.3)
+           (window-width . 0.4)   ; Same width
+           (slot . 1))))
+  ;; end window management
   (:map global-map
 	("C-c c" . project-recompile)
-	("M-o" . other-window)
+	;; ("M-o" . other-window)
 	("C-x k" . kill-current-buffer))
   :config
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -226,6 +244,12 @@
   (dolist (var '("ANTHROPIC_API_KEY"))
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
+
+(use-package ace-window
+  :ensure t
+  :bind (("M-o" . ace-window))
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 ;;---COMPLETION---start
 (use-package vertico
