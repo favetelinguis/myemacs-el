@@ -6,21 +6,7 @@
 (package-initialize)
 
 (use-package ibuffer
-  :bind ("C-x C-b" . ibuffer)
-  :config
-  ;;TODO not sure this is working prob need to fix
-  (setq ibuffer-saved-filter-groups
-        '(("default"
-           ("dired" (mode . dired-mode))
-           ("org" (mode . org-mode))
-           ("programming" (or
-                           (mode . python-mode)
-                           (mode . emacs-lisp-mode)))
-           ("emacs" (or
-                     (name . "^\\*scratch\\*$")
-                     (name . "^\\*Messages\\*$"))))))
-  (add-hook 'ibuffer-mode-hook
-            (lambda () (ibuffer-switch-to-saved-filter-groups "default"))))
+  :bind ("C-x C-b" . ibuffer))
 
 (use-package which-key
   :custom
@@ -56,6 +42,7 @@
   :config
   (defalias 'yes-or-no-p 'y-or-n-p)
   (add-hook 'prog-mode-hook (lambda () (setq truncate-lines t))) ; prevent long line warpping in prog modes
+  (electric-pair-mode 1)
   (global-subword-mode -1)
   (global-superword-mode 1)
   ;; dissable creating lock files, i can now edit the same file from multiple emacs instances which can be bad
@@ -354,6 +341,15 @@
 
 (use-package just-mode
   :ensure t)
+
+(use-package justl
+  :ensure t
+  ;; :config
+  ;; (setq justl-per-recipe-buffer t)
+  ;; bind to r as in run
+  :bind (("C-c r m" . justl)
+	 ("C-c r d" . justl-exec-default-recipe)
+	 ("C-c r r" . justl-exec-recipe-in-dir)))
 
 ;; each language will setup eglot config in its module
 (use-package eglot
