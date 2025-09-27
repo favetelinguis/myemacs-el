@@ -35,29 +35,34 @@
 (use-package emacs
   :ensure nil
   :bind
+  (:map global-map
+	("C-c c" . project-recompile)
+	;; ("M-o" . other-window)
+	("C-c o" . find-file-at-point)
+	("C-x k" . kill-current-buffer))
+  :config
   ;; start window management
   (setq switch-to-buffer-obey-display-actions t
 	switch-to-buffer-in-dedicated-window 'pop)
   ;; (set-frame-parameter (selected-frame) 'window-state nil) ; eval this to reset a bad state if i play around with window stuff, should always be commented out in init.el
   ;; toggle side window using C-x w s
+  ;; https://www.masteringemacs.org/article/demystifying-emacs-window-manager
+  ;; https://protesilaos.com/codelog/2024-02-08-emacs-window-rules-display-buffer-alist/
   (setq display-buffer-alist
 	'(("\\*compilation\\*"
            (display-buffer-in-side-window)
            (side . right)
-           (window-height . 0.3)
-           (window-width . 0.4))  ; 40% of frame width
+           (window-height . 0.6)
+           (window-width . 0.4)
+	   (window-parameters . ((no-delete-other-windows . t)))) 
           ("\\*eldoc\\*"
            (display-buffer-in-side-window)
            (side . right)
-           (window-height . 0.3)
-           (window-width . 0.4)   ; Same width
-           (slot . 1))))
+           (window-height . 0.4)
+           (window-width . 0.4)
+           (slot . 1)
+	   (window-parameters . ((no-delete-other-windows . t))))))
   ;; end window management
-  (:map global-map
-	("C-c c" . project-recompile)
-	;; ("M-o" . other-window)
-	("C-x k" . kill-current-buffer))
-  :config
   (defalias 'yes-or-no-p 'y-or-n-p)
   (add-hook 'prog-mode-hook (lambda () (setq truncate-lines t))) ; prevent long line warpping in prog modes
   (electric-pair-mode 1)
