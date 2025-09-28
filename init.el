@@ -6,25 +6,25 @@
 (package-initialize)
 
 (use-package ibuffer
-  :bind ("C-x C-b" . ibuffer))
+  :bind ("C-x C-b" . ibuffer)
+  :config (setq ibuffer-expert t))
 
 (use-package which-key
   :custom
   (which-key-mode 1))
 
-;; do i really need this when i have sessions with tabstops package
-;; (use-package desktop
-;;   :ensure nil  ; built-in package
-;;   :config
-;;   (desktop-save-mode 1)
-;;   :custom
-;;   (desktop-dirname user-emacs-directory)
-;;   (desktop-base-file-name "desktop")
-;;   (desktop-base-lock-name "desktop.lock")
-;;   (desktop-path (list user-emacs-directory))
-;;   (desktop-save t)
-;;   (desktop-auto-save-timeout 30)
-;;   (desktop-load-locked-desktop t))
+(use-package desktop
+  :ensure nil  ; built-in package
+  :config
+  (desktop-save-mode 1)
+  :custom
+  (desktop-dirname user-emacs-directory)
+  (desktop-base-file-name "desktop")
+  (desktop-base-lock-name "desktop.lock")
+  (desktop-path (list user-emacs-directory))
+  (desktop-save t)
+  (desktop-auto-save-timeout 30)
+  (desktop-load-locked-desktop t))
 
 (use-package ediff
   :ensure nil
@@ -41,6 +41,7 @@
 	("C-c o" . find-file-at-point)
 	("C-x k" . kill-current-buffer))
   :config
+  (setq set-mark-command-repeat-pop t)
   ;; start window management
   (setq switch-to-buffer-obey-display-actions t
 	switch-to-buffer-in-dedicated-window 'pop)
@@ -133,7 +134,6 @@
   (menu-bar-mode -1)      ;; Disable menu bar
   (scroll-bar-mode -1)    ;; Disable scroll bar
   (tooltip-mode -1)      ;; Disable tooltips
-  ;; (desktop-save-mode 1)
   ;; Disable initial scratch message
   (setq initial-scratch-message nil)
   ;; No blinking cursor
