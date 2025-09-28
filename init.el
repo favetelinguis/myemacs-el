@@ -13,19 +13,6 @@
   :custom
   (which-key-mode 1))
 
-(use-package desktop
-  :ensure nil  ; built-in package
-  :config
-  (desktop-save-mode 1)
-  :custom
-  (desktop-dirname user-emacs-directory)
-  (desktop-base-file-name "desktop")
-  (desktop-base-lock-name "desktop.lock")
-  (desktop-path (list user-emacs-directory))
-  (desktop-save t)
-  (desktop-auto-save-timeout 30)
-  (desktop-load-locked-desktop t))
-
 (use-package ediff
   :ensure nil
   :config
@@ -270,7 +257,9 @@
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
   :init
-  (savehist-mode))
+  ;; instead of enabling full desktop mode i just want to save register and kill-ring between restarts
+  (setq savehist-additional-variables '(register-alist kill-ring))
+  (savehist-mode 1))
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
