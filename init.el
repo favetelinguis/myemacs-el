@@ -33,9 +33,9 @@
   :ensure nil
   :bind
   (:map global-map
-	("C-c c" . project-recompile)
+	;;("C-c c" . project-recompile)
 	;; ("M-o" . other-window)
-	("C-c o" . find-file-at-point)
+	;; ("C-c o" . find-file-at-point) ;; redundant use embark
 	("C-x k" . kill-current-buffer))
   :config
   (setq compilation-always-kill t) ;; make rerunning compilation buffer better, i dont get asked each time to quit process between runs
@@ -272,6 +272,7 @@
   (setq savehist-additional-variables '(register-alist kill-ring))
   (savehist-mode 1))
 
+;; used mostly since i want to save registry to get better to navigate buffers
 (use-package desktop
   :ensure nil  ; built-in package
   :config
@@ -493,35 +494,36 @@
   (setq cider-repl-pop-to-buffer-on-connect nil))
 ;;---PROGRAMMING---end
 
+;; redundant use embark export
 ;; Extend isearch with commands
-(use-package isearch
-  :ensure nil
-  :defer t
-  :config
-  (defun my-occur-from-isearch ()
-    (interactive)
-    (let ((query (if isearch-regexp
-		     isearch-string
-		   (regexp-quote isearch-string))))
-      (isearch-update-ring isearch-string isearch-regexp)
-      (let (search-nonincremental-instead)
-        (ignore-errors (isearch-done t t)))
-      (occur query)))
-  (defun my-project-search-from-isearch ()
-    (interactive)
-    (let ((query (if isearch-regexp
-		     isearch-string
-		   (regexp-quote isearch-string))))
-      (isearch-update-ring isearch-string isearch-regexp)
-      (let (search-nonincremental-instead)
-        (ignore-errors (isearch-done t t)))
-      (project-find-regexp query)))
-  
-  :bind
-  (:map isearch-mode-map
-	("C-o" . my-occur-from-isearch)
-	("C-f" . my-project-search-from-isearch)
-	("C-d" . isearch-forward-symbol-at-point)))
+;; (use-package isearch
+;;   :ensure nil
+;;   :defer t
+;;   :config
+;;   (defun my-occur-from-isearch ()
+;;     (interactive)
+;;     (let ((query (if isearch-regexp
+;; 		     isearch-string
+;; 		   (regexp-quote isearch-string))))
+;;       (isearch-update-ring isearch-string isearch-regexp)
+;;       (let (search-nonincremental-instead)
+;;         (ignore-errors (isearch-done t t)))
+;;       (occur query)))
+;;   (defun my-project-search-from-isearch ()
+;;     (interactive)
+;;     (let ((query (if isearch-regexp
+;; 		     isearch-string
+;; 		   (regexp-quote isearch-string))))
+;;       (isearch-update-ring isearch-string isearch-regexp)
+;;       (let (search-nonincremental-instead)
+;;         (ignore-errors (isearch-done t t)))
+;;       (project-find-regexp query)))
+
+;;   :bind
+;;   (:map isearch-mode-map
+;; 	("C-o" . my-occur-from-isearch)
+;; 	("C-f" . my-project-search-from-isearch)
+;; 	("C-d" . isearch-forward-symbol-at-point)))
 
 (use-package just-mode
   :ensure t)
@@ -561,10 +563,11 @@
   :hook
   (prog-mode . apheleia-mode))
 
-(use-package flymake
-  :bind (:map prog-mode-map
-              ("M-n" . flymake-goto-next-error)
-              ("M-p" . flymake-goto-prev-error)))
+;; redundant use M-g n/p
+;; (use-package flymake
+;;   :bind (:map prog-mode-map
+;;               ("M-n" . flymake-goto-next-error)
+;;               ("M-p" . flymake-goto-prev-error)))
 (use-package dape
   :ensure t
   ;; :preface
@@ -621,6 +624,6 @@
 (use-package my-rust
   :ensure nil
   :if (file-exists-p "~/.config/emacs/lisp/my-rust.el"))
-(use-package my-layer
-  :ensure nil
-  :if (file-exists-p "~/.config/emacs/lisp/my-layer.el"))
+;; (use-package my-layer
+;;   :ensure nil
+;;   :if (file-exists-p "~/.config/emacs/lisp/my-layer.el"))
