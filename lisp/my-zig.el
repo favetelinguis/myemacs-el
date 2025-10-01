@@ -7,7 +7,7 @@
 (use-package zig-mode
   :hook ((zig-mode) . eglot-ensure)
   :config
-    (setq zig-format-on-save nil) ; rely on :editor format instead
+  (setq zig-format-on-save nil) ; rely on :editor format instead
   :vc (:url "https://github.com/ziglang/zig-mode" :branch "master")
   :mode "\\.zig\\'")
 
