@@ -38,6 +38,7 @@
 	;; ("C-c o" . find-file-at-point) ;; redundant use embark
 	("C-x k" . kill-current-buffer))
   :config
+  (setq scroll-margin 5)
   (setq compilation-always-kill t) ;; make rerunning compilation buffer better, i dont get asked each time to quit process between runs
   (setq set-mark-command-repeat-pop t)
   ;; start window management
@@ -352,9 +353,7 @@
          ;; M-s bindings in `search-map'
          ("M-s d" . consult-fd)
          ("M-s c" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
+         ("M-s g" . consult-ripgrep)
          ("M-s l" . consult-line)
          ("M-s L" . consult-line-multi)
          ("M-s k" . consult-keep-lines)
@@ -462,6 +461,7 @@
   :ensure t
   :hook (org-mode . visual-line-mode)
   :config
+  (setq org-startup-indented t)
   ;; Set default directory for org files
   (setq org-directory "~/org-notes")
   (setq org-default-todo-file (expand-file-name "tasks.org" org-directory))
@@ -568,6 +568,12 @@
 ;;   :bind (:map prog-mode-map
 ;;               ("M-n" . flymake-goto-next-error)
 ;;               ("M-p" . flymake-goto-prev-error)))
+
+(use-package git-gutter
+  :ensure t
+  :config
+  (global-git-gutter-mode +1))
+
 (use-package dape
   :ensure t
   ;; :preface
