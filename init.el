@@ -5,16 +5,6 @@
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
-(defun my-insert-project-recompile-file-local ()
-  "Insert file-local variable to run project-recompile on save."
-  (interactive)
-  (let ((comment-start (or comment-start "//"))
-        (comment-end (or comment-end "")))
-    (save-excursion
-      (goto-char (point-min))
-      (insert (format "%s -*- eval: (add-hook 'after-save-hook #'project-recompile nil t) -*- %s\n"
-                      comment-start comment-end)))))
-
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer)
   :config (setq ibuffer-expert t))
@@ -596,43 +586,6 @@
   (setq git-gutter:ask-p nil)
   (global-git-gutter-mode +1))
 
-(use-package dape
-  :ensure t
-  ;; :preface
-  ;; By default dape shares the same keybinding prefix as `gud'
-  ;; If you do not want to use any prefix, set it to nil.
-  ;; (setq dape-key-prefix "\C-x\C-a")
-
-  :hook
-  ;; Save breakpoints on quit
-  (kill-emacs . dape-breakpoint-save)
-  ;; Load breakpoints on startup
-  (after-init . dape-breakpoint-load)
-
-  ;; :custom
-  ;; Turn on global bindings for setting breakpoints with mouse
-  ;; (dape-breakpoint-global-mode +1)
-
-  ;; Info buffers to the right
-  ;; (dape-buffer-window-arrangement 'right)
-  ;; Info buffers like gud (gdb-mi)
-  ;; (dape-buffer-window-arrangement 'gud)
-  ;; (dape-info-hide-mode-line nil)
-
-  ;; Projectile users
-  ;; (dape-cwd-function 'projectile-project-root)
-
-  ;; :config
-  ;; Pulse source line (performance hit)
-  ;; (add-hook 'dape-display-source-hook 'pulse-momentary-highlight-one-line)
-
-  ;; Save buffers on startup, useful for interpreted languages
-  ;; (add-hook 'dape-start-hook (lambda () (save-some-buffers t t)))
-
-  ;; Kill compile buffer on build success
-  ;; (add-hook 'dape-compile-hook 'kill-buffer)
-  )
-
 ;; For a more ergonomic Emacs and `dape' experience
 (use-package repeat
   :custom
@@ -655,3 +608,6 @@
 ;; (use-package my-layer
 ;;   :ensure nil
 ;;   :if (file-exists-p "~/.config/emacs/lisp/my-layer.el"))
+(use-package my-debugger
+  :ensure nil
+  :if (file-exists-p "~/.config/emacs/lisp/my-debugger.el"))
