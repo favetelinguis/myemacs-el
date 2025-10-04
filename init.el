@@ -571,7 +571,20 @@
 
 (use-package git-gutter
   :ensure t
+  :bind-keymap ("C-x v j" . my/git-gutter-repeat-map)
+  :bind
+  (:repeat-map my/git-gutter-repeat-map
+	       ("n" . git-gutter:next-hunk)
+	       ("p" . git-gutter:previous-hunk)
+	       ("k" . git-gutter:revert-hunk)
+	       ("=" . git-gutter:popup-hunk)
+	       ("m" . git-gutter:mark-hunk)
+	       ("s" . git-gutter:stage-hunk)
+	       :exit
+	       ("d" . vc-dir)
+	       ("v" . vc-next-action))
   :config
+  (setq git-gutter:ask-p nil)
   (global-git-gutter-mode +1))
 
 (use-package dape
