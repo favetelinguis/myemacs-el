@@ -28,6 +28,8 @@
 	;; ("C-c o" . find-file-at-point) ;; redundant use embark
 	("C-x k" . kill-current-buffer))
   :config
+  (global-auto-revert-mode 1)
+  (setq auto-revert-verbose nil)
   (setq scroll-margin 5)
   (setq compilation-always-kill t) ;; make rerunning compilation buffer better, i dont get asked each time to quit process between runs
   (setq set-mark-command-repeat-pop t)
