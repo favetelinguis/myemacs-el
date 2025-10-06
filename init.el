@@ -619,3 +619,6 @@
 (use-package my-debugger
   :ensure nil
   :if (file-exists-p "~/.config/emacs/lisp/my-debugger.el"))
+(use-package my-roc
+  :ensure nil
+  :if (file-exists-p "~/.config/emacs/lisp/my-roc.el"))
