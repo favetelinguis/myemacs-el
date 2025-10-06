@@ -196,6 +196,13 @@
   ;; Automatically kill timemachine buffer when quitting
   (setq git-timemachine-quit-to-invoking-buffer t))
 
+(use-package flymake
+  :ensure nil
+  :bind (("M-n" . flymake-goto-next-error)
+         ("M-p" . flymake-goto-prev-error)
+         ("C-c f l" . flymake-show-buffer-diagnostics)
+         ("C-c f p" . flymake-show-project-diagnostics)))
+
 (use-package gptel
   :ensure t
   ;;   :hook ((gptel-post-stream . gptel-auto-scroll)
