@@ -26,6 +26,7 @@
 	;;("C-c c" . project-recompile)
 	;; ("M-o" . other-window)
 	;; ("C-c o" . find-file-at-point) ;; redundant use embark
+	("C-c p" . my/switch-to-bb-playground)
 	("C-x k" . kill-current-buffer))
   :config
   (global-auto-revert-mode 1)
