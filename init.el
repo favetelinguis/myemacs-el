@@ -47,7 +47,9 @@
            (side . right)
            (window-height . 0.6)
            (window-width . 0.4)
-	   (window-parameters . ((no-delete-other-windows . t)))) 
+	   (window-parameters . ((no-delete-other-windows . t)
+				 (inhibit-switch-frame . t)
+				 (inhibit-same-window . t)))) 
           ("\\*eldoc\\*"
            (display-buffer-in-side-window)
            (side . right)
@@ -252,7 +254,10 @@
   :ensure t
   :bind (("M-o" . ace-window))
   :config
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+  (setq aw-ignored-buffers '("*eldoc*" "*compilation*") ; TODO eldoc not working since it changes name
+	;; aw-ignore-current t
+	aw-ignore-on t
+	aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 ;;---COMPLETION---start
 (use-package vertico
