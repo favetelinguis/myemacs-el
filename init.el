@@ -688,9 +688,10 @@ specific project."
 ;; (use-package my-layer
 ;;   :ensure nil
 ;;   :if (file-exists-p "~/.config/emacs/lisp/my-layer.el"))
-(use-package my-debugger
-  :ensure nil
-  :if (file-exists-p "~/.config/emacs/lisp/my-debugger.el"))
+;; use the built in gdb debugger instead
+;; (use-package my-debugger
+;;   :ensure nil
+;;   :if (file-exists-p "~/.config/emacs/lisp/my-debugger.el"))
 (use-package my-roc
   :ensure nil
   :if (file-exists-p "~/.config/emacs/lisp/my-roc.el"))
