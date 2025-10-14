@@ -671,6 +671,58 @@ specific project."
       (switch-to-buffer "*bb-playground*")
     (my/cider-jack-in-babashka)))
 
+(use-package gud
+  :ensure nil  ; built-in package
+  :config
+  ;; Enable mouse support in GUD buffers
+  (setq gud-tooltip-mode t)
+  
+  ;; Show main source buffer when using GUD
+  (setq gud-chdir-before-run nil)
+  
+  ;; Use gdb-many-windows layout by default
+  (setq gdb-many-windows t)
+  (setq gdb-show-main t)
+  
+  ;; Better variable display
+  (setq gdb-use-separate-io-buffer t)
+  (setq gdb-display-io-nopopup t)
+  :bind-keymap ("C-c d d" . gud-repeat-map)  
+  :bind (("C-c d g" . gdb)
+         ("C-c d r" . gud-run)
+         ("C-c d n" . gud-next)
+         ("C-c d s" . gud-step)
+	 ("C-c d b" . gud-break)
+	 ("C-c d k" . gud-remove)
+         ("C-c d c" . gud-cont)
+         ("C-c d f" . gud-finish)
+         ("C-c d u" . gud-until)
+         ("C-c d <up>" . gud-up)
+         ("C-c d <down>" . gud-down))
+  
+  ;; Repeat map for debugging navigation
+  (:repeat-map gud-repeat-map
+               ;; Step commands (most commonly repeated)
+               ("n" . gud-next)
+               ("s" . gud-step)
+               ("c" . gud-cont)
+               ("f" . gud-finish)
+               ("u" . gud-until)
+               ;; Stack navigation
+               ("<up>" . gud-up)
+               ("<down>" . gud-down)
+               ;; Quick inspection
+               ("p" . gud-print)
+               ("w" . gud-watch)
+               :exit
+               ;; Exit repeat mode for setup commands
+               ("b" . gud-break)
+               ("k" . gud-remove)
+               ("r" . gud-run)
+               ("q" . gud-quit))
+  
+  :commands (gdb gud-gdb))
+
 ;; load my local packages
 (add-to-list 'load-path "~/.config/emacs/lisp/")
 (use-package my-zig
