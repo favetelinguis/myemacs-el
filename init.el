@@ -24,12 +24,13 @@
   :bind
   (:map global-map
 	;;("C-c c" . project-recompile)
-	;; ("M-o" . other-window)
+	("M-o" . other-window)
 	;; ("C-c o" . find-file-at-point) ;; redundant use embark
 	("C-c p" . my/switch-to-bb-playground)
 	("C-x k" . kill-current-buffer))
   :config
   (global-auto-revert-mode 1)
+  (setq global-auto-revert-non-file-buffers t)
   (setq auto-revert-verbose nil)
   (setq scroll-margin 5)
   (setq compilation-always-kill t) ;; make rerunning compilation buffer better, i dont get asked each time to quit process between runs
@@ -249,15 +250,6 @@
   (dolist (var '("ANTHROPIC_API_KEY"))
     (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
-
-(use-package ace-window
-  :ensure t
-  :bind (("M-o" . ace-window))
-  :config
-  (setq aw-ignored-buffers '("*eldoc*" "*compilation*") ; TODO eldoc not working since it changes name
-	;; aw-ignore-current t
-	aw-ignore-on t
-	aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 ;;---COMPLETION---start
 (use-package vertico
