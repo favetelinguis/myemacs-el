@@ -653,6 +653,12 @@ specific project."
                                     (let ((playground-buffer (get-buffer-create "*bb-playground*")))
                                       (with-current-buffer playground-buffer
                                         (clojure-mode)
+					(insert ";; Babashka Playground\n\n")
+					(insert "(ns bb-malli\n  (:require [babashka.deps :as deps]))\n")
+					(insert"(deps/add-deps '{:deps {metosin/malli {:mvn/version \"0.9.0\"}}})\n")
+					(insert"(require '[malli.core :as malli])\n\n")
+					(insert ";; Your code here\n")
+					(goto-char (point-max)) ; Move cursor to end
                                         (sesman-link-with-buffer playground-buffer '("babashka")))
                                       (switch-to-buffer playground-buffer)))))))))
 
@@ -677,8 +683,8 @@ specific project."
   (setq gdb-show-main t)
   
   ;; Better variable display
-  (setq gdb-use-separate-io-buffer t)
-  (setq gdb-display-io-nopopup t)
+  ;; (setq gdb-use-separate-io-buffer t)
+  ;; (setq gdb-display-io-nopopup t)
   :bind-keymap ("C-c d d" . gud-repeat-map)  
   :bind (("C-c d g" . gdb)
          ("C-c d r" . gud-run)
@@ -714,6 +720,15 @@ specific project."
                ("q" . gud-quit))
   
   :commands (gdb gud-gdb))
+
+(use-package nov
+  :ensure t
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  (setq nov-text-width 80)
+  (setq nov-variable-pitch t)
+  :hook
+  (nov-mode . visual-line-mode))
 
 ;; load my local packages
 (add-to-list 'load-path "~/.config/emacs/lisp/")
