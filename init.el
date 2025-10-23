@@ -391,6 +391,8 @@
   ;; is 'any, such that any key triggers the preview.
   ;; (setq consult-preview-key 'nil)
   (setq consult-preview-key "C-.")
+  (consult-customize
+   consult-theme consult-man consult-org-agenda :preview-key '(:debounce 0.2 any))
   ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
   ;; For some commands and buffer sources it is useful to configure the
   ;; :preview-key on a per-command basis using the `consult-customize' macro.
