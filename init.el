@@ -742,13 +742,12 @@ specific project."
                ;; Quick inspection
                ("p" . gud-print)
                ("w" . gud-watch)
-               :exit
-               ;; Exit repeat mode for setup commands
-               ("b" . gud-break)
+	       ("b" . gud-break)
                ("k" . gud-remove)
                ("r" . gud-run)
+               :exit
+               ;; Exit repeat mode for setup commands
                ("q" . gud-quit))
-  
   :commands (gdb gud-gdb))
 
 (use-package nov
