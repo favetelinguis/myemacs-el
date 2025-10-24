@@ -744,15 +744,20 @@ specific project."
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type))
   :init
+  (setq popper-window-height 50)
   ;; (setq popper-group-function #'popper-group-by-project) 
   (setq popper-reference-buffers
         '("\\*Messages\\*"
           "Output\\*$"
-	  "*compilation*"
 	  "*vc-git.*\\*$"
 	  "*just.*\\*$"
           "\\*AICHAT\\*"
           "\\*Async Shell Command\\*"
+	  "^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+	  "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
+          "^\\*term.*\\*$"   term-mode   ;term as a popup
+          "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+	  Man-mode
           help-mode
           compilation-mode))
   (popper-mode +1)
