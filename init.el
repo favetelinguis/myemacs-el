@@ -19,12 +19,21 @@
   ;; dont open external frame with ediff
   (setq ediff-window-setup-function 'ediff-setup-windows-plain))
 
+(use-package ace-window
+  :ensure t
+  :bind (("M-o" . ace-window))
+  :config
+  (setq 
+   aw-ignore-current t
+   aw-ignore-on t
+   aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
 (use-package emacs
   :ensure nil
   :bind
   (:map global-map
 	("C-c c" . project-recompile)
-	("M-o" . other-window)
+	;; ("M-o" . other-window)
 	;; ("C-c o" . find-file-at-point) ;; redundant use embark
 	("C-c p" . my/switch-to-bb-playground)
 	("C-x k" . kill-current-buffer))
@@ -744,13 +753,15 @@ specific project."
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type))
   :init
-  (setq popper-window-height 50)
+  (setq popper-window-height 30)
   (setq popper-display-function #'popper-display-popup-at-bottom)
   ;; (setq popper-group-function #'popper-group-by-project) 
   (setq popper-reference-buffers
         '("\\*Messages\\*"
           "Output\\*$"
 	  "*vc-git.*\\*$"
+	  "*vc-change-log*"
+	  "*vc-diff*"
 	  "*just.*\\*$"
           "\\*AICHAT\\*"
           "\\*Async Shell Command\\*"
