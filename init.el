@@ -38,6 +38,7 @@
 	("C-c p" . my/switch-to-bb-playground)
 	("C-x k" . kill-current-buffer))
   :config
+  (winner-mode 1) ; use C-c left/right to go over layouts
   (global-auto-revert-mode 1)
   (setq global-auto-revert-non-file-buffers t)
   (setq auto-revert-verbose nil)
@@ -229,13 +230,13 @@
   ;; (gptel-post-response-functions . gptel-end-of-response))
   :bind
   ( :map global-map
-    ("C-c q r" . gptel-rewrite)
-    ("C-c q m" . gptel-menu)
-    ("C-c q a" . gptel-add)
-    ("C-c q c" . gptel-context-remove-all)
-    ("C-c q f" . gptel-add-file)
-    ("C-c q q" . gptel-send-with-options)
-    ("C-c q Q" . gptel-send))
+    ("C-c f r" . gptel-rewrite)
+    ("C-c f m" . gptel-menu)
+    ("C-c f a" . gptel-add)
+    ("C-c f c" . gptel-context-remove-all)
+    ("C-c f A" . gptel-add-file)
+    ("C-c f f" . gptel-send-with-options)
+    ("C-c f F" . gptel-send))
   :config
   (defun gptel-send-with-options (&optional arg)
     "Send query.  With prefix ARG open gptel's menu instead. in gptel menu select options and save with c-x c-s"
@@ -351,7 +352,7 @@
          ;; Other custom bindings
          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
          ;; M-g bindings in `goto-map'
-	 ("M-g a" . consult-org-agenda)
+	 ("M-g a" . consult-yank-pop)
          ("M-g e" . consult-compile-error)
          ("M-g r" . consult-grep-match)
          ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
@@ -505,9 +506,9 @@
   ;; Basic keybindings
   :bind
   ("C-c n a" . org-agenda)
-  ("C-c n t" . (lambda () (interactive) (org-capture nil "t"))) ; will trigger the capture for t
-  ("C-c n n" . (lambda () (interactive) (org-capture nil "n"))) ; will trigger the capture for t
-  ("C-c n T" . org-todo-list)
+  ("C-c n n" . (lambda () (interactive) (org-capture nil "n")))
+  ("C-c n l" . consult-org-agenda)
+  ("C-c n t" . org-todo-list)
   ("C-c n c" . org-capture))
 ;;---NOTE TAKING---end
 
@@ -762,6 +763,7 @@ specific project."
 	  "*vc-git.*\\*$"
 	  "*vc-change-log*"
 	  "*vc-diff*"
+	  "*vc-log*"
 	  "*just.*\\*$"
           "\\*AICHAT\\*"
           "\\*Async Shell Command\\*"
