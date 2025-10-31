@@ -4,6 +4,14 @@
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
+;; for the compilation buffer to support colors
+(use-package ansi-color
+  :hook (compilation-filter . ansi-color-compilation-filter))
+
+;; for compilation will remove the osc stuff making odin test better
+(use-package ansi-osc
+  :ensure t
+  :hook (compilation-filter . ansi-osc-compilation-filter))
 
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer)
@@ -30,6 +38,12 @@
 
 (use-package emacs
   :ensure nil
+  :hook
+  (prog-mode . (lambda () (setq truncate-lines t))); prevent long line warpping in prog modes
+  ;; Disable electric-pair in Lisp modes
+  (emacs-lisp-mode . (lambda () (electric-pair-local-mode -1)))
+  (clojure-mode . (lambda () (electric-pair-local-mode -1)))
+  (lisp-mode . (lambda () (electric-pair-local-mode -1)))
   :bind
   (:map global-map
 	("C-c c" . project-recompile)
@@ -49,7 +63,6 @@
   (setq switch-to-buffer-obey-display-actions t
 	switch-to-buffer-in-dedicated-window 'pop)
   (defalias 'yes-or-no-p 'y-or-n-p)
-  (add-hook 'prog-mode-hook (lambda () (setq truncate-lines t))) ; prevent long line warpping in prog modes
   (electric-pair-mode 1)
   (global-subword-mode -1)
   (global-superword-mode 1)
@@ -765,7 +778,8 @@ specific project."
 	  "*vc-diff*"
 	  "*vc-log*"
 	  "*just.*\\*$"
-          "\\*AICHAT\\*"
+	  "*eldoc*"
+	  "\\*AICHAT\\*"
           "\\*Async Shell Command\\*"
 	  Man-mode
           help-mode
@@ -797,3 +811,6 @@ specific project."
 (use-package my-roc
   :ensure nil
   :if (file-exists-p "~/.config/emacs/lisp/my-roc.el"))
+(use-package my-odin
+  :ensure nil
+  :if (file-exists-p "~/.config/emacs/lisp/my-odin.el"))
