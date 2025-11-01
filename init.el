@@ -701,34 +701,41 @@ specific project."
       (switch-to-buffer "*bb-playground*")
     (my/cider-jack-in-babashka)))
 
-(use-package gud
+(use-package gdb-mi
   :ensure nil  ; built-in package
   :config
-  ;; Enable mouse support in GUD buffers
-  (setq gud-tooltip-mode t)
-  
-  ;; Show main source buffer when using GUD
-  (setq gud-chdir-before-run nil)
-  
-  ;; Use gdb-many-windows layout by default
+  ;; Enable the enhanced multi-window debugging layout
   (setq gdb-many-windows t)
   (setq gdb-show-main t)
   
-  ;; Better variable display
-  ;; (setq gdb-use-separate-io-buffer t)
-  ;; (setq gdb-display-io-nopopup t)
-  :bind-keymap ("C-c d d" . gud-repeat-map)  
-  :bind (("C-c d g" . gdb)
+  ;; Better variable display and IO handling
+  (setq gdb-use-separate-io-buffer t)
+  (setq gdb-display-io-nopopup t)
+  
+  ;; Enable mouse support and tooltips
+  (setq gdb-mouse-select-breakpoint t)
+  (setq gud-tooltip-mode t)
+  
+  ;; Source buffer settings
+  (setq gdb-show-changed-values t)  ; Highlight changed variables
+  (setq gdb-delete-out-of-scope t)  ; Clean up out-of-scope variables
+  
+  :bind (;; Main debugging commands
+         ("C-c d g" . gdb)
          ("C-c d r" . gud-run)
          ("C-c d n" . gud-next)
          ("C-c d s" . gud-step)
-	 ("C-c d b" . gud-break)
-	 ("C-c d k" . gud-remove)
+         ("C-c d b" . gud-break)
+         ("C-c d k" . gud-remove)
          ("C-c d c" . gud-cont)
          ("C-c d f" . gud-finish)
          ("C-c d u" . gud-until)
          ("C-c d <up>" . gud-up)
-         ("C-c d <down>" . gud-down))
+         ("C-c d <down>" . gud-down)
+         ;; GDB-specific enhancements
+         ("C-c d w" . gud-watch)
+         ("C-c d p" . gud-print)
+         ("C-c d q" . gdb-quit))
   
   ;; Repeat map for debugging navigation
   (:repeat-map gud-repeat-map
@@ -744,13 +751,15 @@ specific project."
                ;; Quick inspection
                ("p" . gud-print)
                ("w" . gud-watch)
-	       ("b" . gud-break)
+               ("b" . gud-break)
                ("k" . gud-remove)
                ("r" . gud-run)
                :exit
                ;; Exit repeat mode for setup commands
-               ("q" . gud-quit))
-  :commands (gdb gud-gdb))
+               ("q" . gdb-quit))
+  
+  ;; Auto-enable many-windows mode when starting GDB
+  :hook (gdb-mode . gdb-many-windows-mode))
 
 (use-package nov
   :ensure t
@@ -767,7 +776,7 @@ specific project."
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type))
   :init
-  (setq popper-window-height 30)
+  (setq popper-window-height 20)
   (setq popper-display-function #'popper-display-popup-at-bottom)
   ;; (setq popper-group-function #'popper-group-by-project) 
   (setq popper-reference-buffers
