@@ -16,19 +16,23 @@
 
 (use-package odin-mode
   :vc (:url "https://github.com/mattt-b/odin-mode" :rev :newest)
-  :after eglot
+  :after (eglot apheleia)
   :bind (("C-c t" . odin-test-at-point))
-  :hook ((odin-mode) . eglot-ensure)
+  :hook ;((odin-mode) . eglot-ensure)
   ((odin-mode) . (lambda ()
 		   (setq tab-width 4
 			 indent-tabs-mode t)
-		   (add-hook 'before-save-hook 'eglot-format-buffer nil t)))
+		   ))
   :config
-  (add-to-list 'compilation-error-regexp-alist-alist
-               '(odin-test
-		 "^\\[ERROR\\].*\\[\\([^:]+\\):\\([0-9]+\\):"
-		 1 2 nil 2 1))
-  (add-to-list 'compilation-error-regexp-alist 'odin-test)
+  (add-to-list 'apheleia-formatters
+               '(odinfmt . ("odinfmt" "-stdin")))
+  (add-to-list 'apheleia-mode-alist
+               '(odin-mode . odinfmt))
+  ;; (add-to-list 'compilation-error-regexp-alist-alist
+  ;;              '(odin-test
+  ;; 		 "^\\[ERROR\\].*\\[\\([^:]+\\):\\([0-9]+\\):"
+  ;; 		 1 2 nil 2 1))
+  ;; (add-to-list 'compilation-error-regexp-alist 'odin-test)
   :mode ("\\.odin\\'" . odin-mode))
 
 (provide 'my-odin)

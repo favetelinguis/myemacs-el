@@ -796,6 +796,15 @@ specific project."
   (popper-mode +1)
   (popper-echo-mode +1))
 
+;; i think this will kick in if i dont have eglot set
+(use-package dumb-jump
+  :ensure t
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  (setq dumb-jump-selector 'completing-read
+        dumb-jump-force-searcher 'rg  ; use ripgrep if available
+        dumb-jump-prefer-searcher 'rg))
+
 ;; load my local packages
 (add-to-list 'load-path "~/.config/emacs/lisp/")
 (use-package my-zig
