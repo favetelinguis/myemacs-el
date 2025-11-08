@@ -46,7 +46,7 @@
   (lisp-mode . (lambda () (electric-pair-local-mode -1)))
   :bind
   (:map global-map
-	("C-c c" . project-recompile)
+	("C-c j" . project-recompile)
 	;; ("M-o" . other-window)
 	;; ("C-c o" . find-file-at-point) ;; redundant use embark
 	("C-c p" . my/switch-to-bb-playground)
@@ -733,6 +733,7 @@ specific project."
          ("C-c d <up>" . gud-up)
          ("C-c d <down>" . gud-down)
          ;; GDB-specific enhancements
+	 ("C-c d W" . gdb-many-windows)
          ("C-c d w" . gud-watch)
          ("C-c d p" . gud-print)
          ("C-c d q" . gdb-quit))
@@ -776,7 +777,7 @@ specific project."
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type))
   :init
-  (setq popper-window-height 20)
+  (setq popper-window-height 25)
   (setq popper-display-function #'popper-display-popup-at-bottom)
   ;; (setq popper-group-function #'popper-group-by-project) 
   (setq popper-reference-buffers
@@ -795,15 +796,6 @@ specific project."
           compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))
-
-;; i think this will kick in if i dont have eglot set
-(use-package dumb-jump
-  :ensure t
-  :config
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-  (setq dumb-jump-selector 'completing-read
-        dumb-jump-force-searcher 'rg  ; use ripgrep if available
-        dumb-jump-prefer-searcher 'rg))
 
 ;; load my local packages
 (add-to-list 'load-path "~/.config/emacs/lisp/")

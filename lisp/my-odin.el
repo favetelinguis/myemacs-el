@@ -9,25 +9,34 @@
         (folder (file-name-directory (buffer-file-name))))
     (if folder
         (let ((command (if word
-                           (format "odin test %s -define:ODIN_TEST_NAMES=%s" folder word)
+                           (format "odin test %s -define:ODIN_TEST_NAMES=%s -define:ODIN_TEST_THREADS=1" folder word)
                          (format "odin test %s" folder))))
+          (compile command))
+      (message "Buffer is not associated with a file"))))
+
+(defun odin-check-module ()
+  "Run odin check command with current buffer's folder."
+  (interactive)
+  (let ((folder (file-name-directory (buffer-file-name))))
+    (if folder
+        (let ((command (format "odin check %s" folder)))
           (compile command))
       (message "Buffer is not associated with a file"))))
 
 (use-package odin-mode
   :vc (:url "https://github.com/mattt-b/odin-mode" :rev :newest)
   :after (eglot apheleia)
-  :bind (("C-c t" . odin-test-at-point))
-  :hook ;((odin-mode) . eglot-ensure)
+  :bind (("C-c t" . odin-test-at-point)
+	 ("C-c c" . odin-check-module))
+  :hook ((odin-mode) . eglot-ensure)
   ((odin-mode) . (lambda ()
 		   (setq tab-width 4
-			 indent-tabs-mode t)
-		   ))
+			 indent-tabs-mode t)))
   :config
   (add-to-list 'apheleia-formatters
-               '(odinfmt . ("odinfmt" "-stdin")))
+	       '(odinfmt . ("odinfmt" "-stdin")))
   (add-to-list 'apheleia-mode-alist
-               '(odin-mode . odinfmt))
+	       '(odin-mode . odinfmt))
   ;; (add-to-list 'compilation-error-regexp-alist-alist
   ;;              '(odin-test
   ;; 		 "^\\[ERROR\\].*\\[\\([^:]+\\):\\([0-9]+\\):"
