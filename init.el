@@ -299,20 +299,6 @@
   (setq savehist-additional-variables '(register-alist kill-ring))
   (savehist-mode 1))
 
-;; used mostly since i want to save registry to get better to navigate buffers
-(use-package desktop
-  :ensure nil  ; built-in package
-  :config
-  (desktop-save-mode 1)
-  :custom
-  (desktop-dirname user-emacs-directory)
-  (desktop-base-file-name "desktop")
-  (desktop-base-lock-name "desktop.lock")
-  (desktop-path (list user-emacs-directory))
-  (desktop-save t)
-  (desktop-auto-save-timeout 30)
-  (desktop-load-locked-desktop t))
-
 (use-package orderless
   :ensure t
   :custom
