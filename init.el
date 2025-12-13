@@ -54,8 +54,11 @@
   :config
   (winner-mode 1) ; use C-c left/right to go over layouts
   (global-auto-revert-mode 1)
+  (setq auto-revert-use-notify t) ;; instatnt autorevert
   (setq global-auto-revert-non-file-buffers t)
   (setq auto-revert-verbose nil)
+  (setq auto-revert-avoid-polling nil)  ; Add this
+  (setq auto-revert-interval 0.25)         ; Add this (check every 1 second)
   (setq scroll-margin 5)
   (setq compilation-always-kill t) ;; make rerunning compilation buffer better, i dont get asked each time to quit process between runs
   (setq set-mark-command-repeat-pop t)
@@ -68,19 +71,16 @@
   (global-superword-mode 1)
   ;; dissable creating lock files, i can now edit the same file from multiple emacs instances which can be bad
   (setq create-lockfiles nil)
-  ;; I dont really know what this does i got it from
   ;;https://blog.chmouel.com/posts/emacs-isearch/
-  ;; I use it to get occur selected from isearch
-  ;; i have replaced this with popper or?
-  ;;   (defun my-select-window (window &rest _)
-  ;;     "Select WINDOW for display-buffer-alist"
-  ;;     (select-window window))
-  ;;   (setq display-buffer-alist
-  ;; '(((or . ((derived-mode . occur-mode)))
-  ;;            (display-buffer-reuse-mode-window display-buffer-at-bottom)
-  ;;            (body-function . my-select-window)
-  ;;            (dedicated . t)
-  ;;            (preserve-size . (t . t)))))
+  (defun my-select-window (window &rest _)
+    "Select WINDOW for display-buffer-alist"
+    (select-window window))
+  (setq display-buffer-alist ; used to give occur focus when it opens by default focus is not switched
+	'(((or . ((derived-mode . occur-mode)))
+           (display-buffer-reuse-window display-buffer-pop-up-window)
+           (body-function . my-select-window)
+           (dedicated . t)
+           (preserve-size . (t . t)))))
 
   (setq ring-bell-function 'ignore)
   ;; allow all disabled commands without prompting
@@ -541,36 +541,15 @@
           (other-window next)
           (isearch-backward)
           (other-window (- next))))))            )
-;; redundant use embark export
-;; Extend isearch with commands
-;; (use-package isearch
-;;   :ensure nil
-;;   :defer t
-;;   :config
-;;   (defun my-occur-from-isearch ()
-;;     (interactive)
-;;     (let ((query (if isearch-regexp
-;; 		     isearch-string
-;; 		   (regexp-quote isearch-string))))
-;;       (isearch-update-ring isearch-string isearch-regexp)
-;;       (let (search-nonincremental-instead)
-;;         (ignore-errors (isearch-done t t)))
-;;       (occur query)))
-;;   (defun my-project-search-from-isearch ()
-;;     (interactive)
-;;     (let ((query (if isearch-regexp
-;; 		     isearch-string
-;; 		   (regexp-quote isearch-string))))
-;;       (isearch-update-ring isearch-string isearch-regexp)
-;;       (let (search-nonincremental-instead)
-;;         (ignore-errors (isearch-done t t)))
-;;       (project-find-regexp query)))
 
-;;   :bind
-;;   (:map isearch-mode-map
-;; 	("C-o" . my-occur-from-isearch)
-;; 	("C-f" . my-project-search-from-isearch)
-;; 	("C-d" . isearch-forward-symbol-at-point)))
+(use-package isearch
+  :ensure nil
+  :defer t
+  :bind
+  (("M-s r" . query-replace-regexp)
+   :map isearch-mode-map
+   ;; TODO this do not wok just he to show how to add to map
+   ("R" . isearch-query-replace-regexp)))
 
 (use-package just-mode
   :ensure t)
@@ -605,6 +584,7 @@
 ;; disable other language mode formatters and use apheleia for all formatting
 (use-package apheleia
   :ensure t
+  :demand t
   :config
   (apheleia-global-mode +1)
   :hook
@@ -810,3 +790,6 @@ specific project."
 (use-package my-odin
   :ensure nil
   :if (file-exists-p "~/.config/emacs/lisp/my-odin.el"))
+(use-package my-janet
+  :ensure nil
+  :if (file-exists-p "~/.config/emacs/lisp/my-janet.el"))
