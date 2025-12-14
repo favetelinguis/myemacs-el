@@ -51,6 +51,10 @@
   :hook
   (janet-ts-mode . (lambda () (electric-pair-local-mode -1)))
   :config
+  (add-to-list 'apheleia-formatters
+               '(janet-fmt . ("janet" "-e" "(import spork/fmt) (fmt/format-print (file/read stdin :all))")))
+  (add-to-list 'apheleia-mode-alist
+               '(janet-ts-mode . janet-fmt))
   (setq treesit-language-source-alist
 	(if (eq 'windows-nt system-type)
             '((janet-simple
