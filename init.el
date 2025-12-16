@@ -469,15 +469,6 @@
 	       '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
-(use-package helpful
-  :ensure t
-  :bind
-  (("C-h f" . helpful-callable)
-   ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key)
-   ("C-h x" . helpful-command)
-   ("C-c C-d" . helpful-at-point)
-   ("C-h F" . helpful-function)))
 
 ;;---NOTE TAKING---start
 (use-package org
@@ -486,9 +477,8 @@
   :config
   (setq org-startup-indented t)
   ;; Set default directory for org files
-  (setq org-directory "~/org-notes")
+  (setq org-directory "~/org-agenda")
   (setq org-default-todo-file (expand-file-name "tasks.org" org-directory))
-  (setq org-default-notes-file (expand-file-name "notes.org" org-directory))
 
   ;; Agenda files location
   (setq org-agenda-files (list org-directory))
@@ -496,19 +486,40 @@
   ;; Create directory if it doesn't exist
   (unless (file-exists-p org-directory)
     (make-directory org-directory t))
-  
   (setq org-capture-templates
-	'(("t" "Todo" entry (file+headline org-default-todo-file "Tasks")
-           "* TODO %?\n  %i\n")
-	  ("n" "Note" entry (file+headline org-default-notes-file "Notes")
-           "* %?\nEntered on %U  %i\n")))
-  ;; Basic keybindings
+	'(("T" "Todo with link" entry
+           (file org-default-todo-file)
+           "* TODO %?\n %U\n Created from: %a\n  %i"
+           :empty-lines 1)
+          
+          ("t" "Todo without link" entry
+           (file org-default-todo-file)
+           "* TODO %?\n  %U"
+           :empty-lines 1)))  
   :bind
-  ("C-c n a" . org-agenda)
-  ("C-c n n" . (lambda () (interactive) (org-capture nil "n")))
-  ("C-c n l" . consult-org-agenda)
-  ("C-c n t" . org-todo-list)
-  ("C-c n c" . org-capture))
+  ("C-c n a" . consult-org-agenda)
+  ("C-c n t" . (lambda () (interactive) (org-capture nil "t")))
+  ("C-c n T" . (lambda () (interactive) (org-capture nil "T"))))
+
+(use-package denote
+  :ensure t
+  :hook (dired-mode . denote-dired-mode)
+  :bind
+  (("C-c n n" . denote)
+   ("C-c n N" . denote-region)
+   ("C-c n r" . denote-rename-file)
+   ("C-c n l" . denote-link)
+   ("C-c n b" . denote-backlinks)
+   ("C-c n d" . denote-dired)
+   ("C-c n g" . denote-grep))
+  :config
+  (setq denote-directory (expand-file-name "~/notes/"))
+
+  ;; Automatically rename Denote buffers when opening them so that
+  ;; instead of their long file name they have, for example, a literal
+  ;; "[D]" followed by the file's title.  Read the doc string of
+  ;; `denote-rename-buffer-format' for how to modify this.
+  (denote-rename-buffer-mode 1))
 ;;---NOTE TAKING---end
 
 (use-package cider
