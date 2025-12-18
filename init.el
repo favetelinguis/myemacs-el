@@ -510,7 +510,8 @@
    ("C-c n r" . denote-rename-file)
    ("C-c n l" . denote-link)
    ("C-c n b" . denote-backlinks)
-   ("C-c n d" . denote-dired)
+   ("C-c n d" . (lambda () (interactive) (dired denote-directory)))
+   ("C-c n D" . denote-dired)
    ("C-c n g" . denote-grep))
   :config
   (setq denote-directory (expand-file-name "~/notes/"))
@@ -647,11 +648,11 @@ specific project."
         (get-buffer-process server-buf) nil)
        (cider-nrepl-connect
         (list :repl-buffer server-buf
-              :repl-type 'clj
-              :host (plist-get nrepl-endpoint :host)
-              :port (plist-get nrepl-endpoint :port)
-              :session-name "babashka"
-              :repl-init-function (lambda ()
+	      :repl-type 'clj
+	      :host (plist-get nrepl-endpoint :host)
+	      :port (plist-get nrepl-endpoint :port)
+	      :session-name "babashka"
+	      :repl-init-function (lambda ()
                                     (setq-local cljr-suppress-no-project-warning t
                                                 cljr-suppress-middleware-warnings t
                                                 process-query-on-exit-flag nil)
@@ -660,7 +661,7 @@ specific project."
                                     (rename-buffer "*babashka-repl*")
                                     ;; Create and link playground buffer
                                     (let ((playground-buffer (get-buffer-create "*bb-playground*")))
-                                      (with-current-buffer playground-buffer
+				      (with-current-buffer playground-buffer
                                         (clojure-mode)
 					(insert ";; Babashka Playground\n\n")
 					(insert "(ns bb-malli\n  (:require [babashka.deps :as deps]))\n")
@@ -669,7 +670,7 @@ specific project."
 					(insert ";; Your code here\n")
 					(goto-char (point-max)) ; Move cursor to end
                                         (sesman-link-with-buffer playground-buffer '("babashka")))
-                                      (switch-to-buffer playground-buffer)))))))))
+				      (switch-to-buffer playground-buffer)))))))))
 
 (defun my/switch-to-bb-playground ()
   "Switch to *bb-playground* buffer if it exists, otherwise start babashka REPL and switch to playground."
@@ -717,24 +718,24 @@ specific project."
   
   ;; Repeat map for debugging navigation
   (:repeat-map gud-repeat-map
-               ;; Step commands (most commonly repeated)
-               ("n" . gud-next)
-               ("s" . gud-step)
-               ("c" . gud-cont)
-               ("f" . gud-finish)
-               ("u" . gud-until)
-               ;; Stack navigation
-               ("<up>" . gud-up)
-               ("<down>" . gud-down)
-               ;; Quick inspection
-               ("p" . gud-print)
-               ("w" . gud-watch)
-               ("b" . gud-break)
-               ("k" . gud-remove)
-               ("r" . gud-run)
-               :exit
-               ;; Exit repeat mode for setup commands
-               ("q" . gdb-quit))
+	       ;; Step commands (most commonly repeated)
+	       ("n" . gud-next)
+	       ("s" . gud-step)
+	       ("c" . gud-cont)
+	       ("f" . gud-finish)
+	       ("u" . gud-until)
+	       ;; Stack navigation
+	       ("<up>" . gud-up)
+	       ("<down>" . gud-down)
+	       ;; Quick inspection
+	       ("p" . gud-print)
+	       ("w" . gud-watch)
+	       ("b" . gud-break)
+	       ("k" . gud-remove)
+	       ("r" . gud-run)
+	       :exit
+	       ;; Exit repeat mode for setup commands
+	       ("q" . gdb-quit))
   
   ;; Auto-enable many-windows mode when starting GDB
   :hook (gdb-mode . gdb-many-windows-mode))
