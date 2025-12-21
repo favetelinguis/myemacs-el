@@ -8,6 +8,12 @@
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
 
+;; (use-package server
+;;   :ensure nil  ; built-in package
+;;   :config
+;;   (unless (server-running-p)
+;;     (server-start)))
+
 ;; for compilation will remove the osc stuff making odin test better
 (use-package ansi-osc
   :ensure t
@@ -31,7 +37,8 @@
   :ensure t
   :bind (("M-o" . ace-window))
   :config
-  (setq 
+  (setq
+   aw-scope 'frame
    aw-ignore-current t
    aw-ignore-on t
    aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
@@ -92,7 +99,7 @@
   (setq xref-search-program 'ripgrep)
   (setq-default line-spacing 0.2)
   (set-face-attribute 'default nil
-                      :font "JetBrains Mono-13"
+                      :font "JetBrains Mono-10"
                       :weight 'normal
                       :width 'normal)
   :custom
@@ -252,17 +259,27 @@
     ("C-c f F" . gptel-send))
   :config
   (defun gptel-send-with-options (&optional arg)
-    "Send query.  With prefix ARG open gptel's menu instead. in gptel menu select options and save with c-x c-s"
+    "Send query from minibuffer to aichat gptel buffer."
     (interactive "P")
     (if arg
 	(call-interactively 'gptel-menu)
-      (gptel--suffix-send (transient-args 'gptel-menu))))
-  
+      ;; Ensure we have a proper gptel buffer
+      (let ((buffer (get-buffer "aichat")))
+	(unless buffer
+          (setq buffer (get-buffer-create "aichat"))
+          (with-current-buffer buffer
+            (funcall gptel-default-mode)
+            (gptel-mode 1)
+            (setq gptel--backend-name gptel-backend
+                  gptel--model gptel-model)))
+	;; Send with minibuffer input to buffer
+	(let ((transient-current-command 'gptel-menu))
+          (gptel--suffix-send '("m" "baichat"))))))
   (setq gptel-default-mode 'org-mode)
-  (setq gptel-model 'claude-sonnet-4-20250514
+  (setq gptel-model 'claude-sonnet-4-5-20250929
 	gptel-backend (gptel-make-anthropic "AICHAT"
 			:stream t
-			:models '(claude-sonnet-4-20250514)
+			:models '(claude-sonnet-4-5-20250929)
 			:key (getenv "ANTHROPIC_API_KEY"))))
 
 (use-package x509-mode
