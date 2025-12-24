@@ -43,6 +43,11 @@
    aw-ignore-on t
    aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
+;; OBS will need to run kdl-install-treesitter on first use
+(use-package kdl-mode
+  :ensure t
+  :mode "\\.kdl\\'")
+
 (use-package emacs
   :ensure nil
   :hook
@@ -374,7 +379,7 @@
          ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
          ("M-g g" . consult-goto-line)             ;; orig. goto-line
          ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-s M-s" . consult-outline)               ;; Alternative: consult-org-heading
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
@@ -791,6 +796,20 @@ specific project."
           compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))
+
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch)
+         ("C-c M-g" . magit-file-dispatch))
+  :config
+  ;; delete git as backend for git to only use magit
+  (setq vc-handled-backends (delq 'Git vc-handled-backends))
+  
+  ;; Make project.el use magit
+  (with-eval-after-load 'project
+    (define-key project-prefix-map "v" 'magit-project-status)
+    (add-to-list 'project-switch-commands '(magit-project-status "Magit") t)))
 
 ;; load my local packages
 (add-to-list 'load-path "~/.config/emacs/lisp/")
