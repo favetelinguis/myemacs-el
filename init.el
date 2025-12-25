@@ -1,3 +1,7 @@
+;; This file is organized by outlining using ;;; and ;;;; etc to represent levels,
+;; then a command such as consult-outline bound to M-s M-s can be used to navigate.
+
+;;; Package management
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
@@ -225,13 +229,48 @@
   ;; ...
   )
 
-(use-package zenburn-theme
+;;; Theme
+(use-package doom-themes
   :ensure t
+  :custom
+  ;; Global settings (defaults)
+  (doom-themes-enable-bold nil)   ; if nil, bold is universally disabled
+  (doom-themes-enable-italic nil) ; if nil, italics is universally disabled
   :config
-  (load-theme 'zenburn t))
+  (load-theme 'doom-zenburn t)
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+;;; Modline
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  :config
+  ;; Display date and time
+  (setq display-time-format "%d, Week %U | %H:%M")
+  (display-time-mode 1)
+  ;; Display battery
+  (display-battery-mode 1))
 
 (use-package markdown-mode
   :ensure t)
+
+;;; Version control
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch)
+         ("C-c M-g" . magit-file-dispatch))
+  :config
+  ;; delete git as backend for git to only use magit
+  (setq vc-handled-backends (delq 'Git vc-handled-backends))
+  
+  ;; Make project.el use magit
+  (with-eval-after-load 'project
+    (define-key project-prefix-map "v" 'magit-project-status)
+    (add-to-list 'project-switch-commands '(magit-project-status "Magit") t)))
 
 (use-package git-timemachine
   :ensure t
@@ -249,6 +288,7 @@
          ("C-c f l" . flymake-show-buffer-diagnostics)
          ("C-c f p" . flymake-show-project-diagnostics)))
 
+;;; AI
 (use-package gptel
   :ensure t
   ;;   :hook ((gptel-post-stream . gptel-auto-scroll)
@@ -523,6 +563,11 @@
   ("C-c n t" . (lambda () (interactive) (org-capture nil "t")))
   ("C-c n T" . (lambda () (interactive) (org-capture nil "T"))))
 
+;;; Window management
+(setq display-buffer-base-action 
+      '((display-buffer-pop-up-frame))) ; Open in new frame and use nire to handle splits
+
+;;; Note taking
 (use-package denote
   :ensure t
   :hook (dired-mode . denote-dired-mode)
@@ -797,19 +842,7 @@ specific project."
   (popper-mode +1)
   (popper-echo-mode +1))
 
-(use-package magit
-  :ensure t
-  :bind (("C-x g" . magit-status)
-         ("C-x M-g" . magit-dispatch)
-         ("C-c M-g" . magit-file-dispatch))
-  :config
-  ;; delete git as backend for git to only use magit
-  (setq vc-handled-backends (delq 'Git vc-handled-backends))
-  
-  ;; Make project.el use magit
-  (with-eval-after-load 'project
-    (define-key project-prefix-map "v" 'magit-project-status)
-    (add-to-list 'project-switch-commands '(magit-project-status "Magit") t)))
+
 
 ;; load my local packages
 (add-to-list 'load-path "~/.config/emacs/lisp/")
